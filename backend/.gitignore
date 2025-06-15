@@ -1,0 +1,46 @@
+# Entorno virtual
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# Archivos y carpetas de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Archivos de log
+*.log
+
+# Archivos de base de datos temporales
+*.sqlite3
+
+# Configuraciones de IDE
+.vscode/
+.idea/
+*.iml
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Pytest / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+*.cover
+.cache
+pytest_cache/
+
+# Build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# FastAPI docs cache (opcional)
+openapi.json
