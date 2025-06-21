@@ -21,3 +21,12 @@ def buscar_cliente_por_id(clientes, id_cliente):
         if cliente.id_cliente == id_cliente:
             return cliente
     return None
+
+
+def eliminar_cliente_por_id(clientes, id_cliente):
+    for i, cliente in enumerate(clientes):
+        if cliente.id_cliente == id_cliente:
+            del clientes[i]
+            return True
+    return False
+

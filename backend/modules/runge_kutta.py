@@ -2,7 +2,7 @@ def ecuacion_diferencial(x, a, b, c):
     # return 0.5 * x**2 - 0.2 * x + 5
     return a * x**2 + b * x + c
 
-def runge_kutta(t0=0, x0=0, h=0.001, xf=120, ec_a=0.03, ec_b=-0.2, ec_c=5):
+def runge_kutta(t0=0, x0=0, h=0.001, xf=120, ec_a=0.5, ec_b=-0.2, ec_c=5):
 
     t = t0
     x = x0
@@ -43,6 +43,6 @@ def runge_kutta(t0=0, x0=0, h=0.001, xf=120, ec_a=0.03, ec_b=-0.2, ec_c=5):
     # TODO-log
     # print(f"t: {t:0.4f} | x: {x:0.4f} ////////////// Final //////////////")
 
-    return t_final, x_final, runge_kutta_json
+    return round(t_final,4), round(x_final, 4), runge_kutta_json
 
 runge_kutta(h=0.001)
