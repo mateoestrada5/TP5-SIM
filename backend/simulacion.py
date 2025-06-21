@@ -1,6 +1,6 @@
 
-from modulos.utilities import insertar_ordenado
-from modulos.clases import Estado, Cliente, Alfombra, Evento
+from modules.utilities import insertar_ordenado
+from modules.clases import Estado, Cliente, Alfombra, Evento
 from random import random as r
 
 
@@ -98,3 +98,4 @@ def simular(): # deberia recibir la situacion inicial de la simulacion
         print(f'{i + 1} -> | {eventos[i].nombre}  {eventos[i].reloj:0.4f}')
 
 
+simular()
