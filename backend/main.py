@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from modules.logica_colas import sistema_colas
 from fastapi.responses import JSONResponse
+from modules.clases import Evento, Estado, Cliente, Alfombra
+from random import random as r
+from modules.utilities import insertar_ordenado
 
 app = FastAPI()
 
