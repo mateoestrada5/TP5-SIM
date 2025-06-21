@@ -1,4 +1,5 @@
 
+# todo esta clase no se usa, se puede eliminar
 class gestor_simulacion():
     def __init__(self):
         self.simulaciones = []
@@ -15,8 +16,33 @@ class gestor_simulacion():
 
 
 class Vector_estado():
-    def __init__(self):
+    def __init__(self, evento, reloj, rnd_ll="", tiempo_ll="", hora_ll="", tiempo_descenso="", hora_fin_descenso="", id_cliente="", e_alfombra="", cola=""):
         self.rnd = 0
+        self.evento = evento  # Evento actual
+        self.reloj = reloj  # Reloj de la simulación
+        self.rnd_ll = rnd_ll  # RND de llegada del cliente
+        self.tiempo_ll = tiempo_ll  # Tiempo de llegada del cliente
+        self.hora_ll = hora_ll  # Hora de llegada del cliente
+        self.tiempo_descenso = tiempo_descenso  # Tiempo de descenso del cliente
+        self.hora_fin_descenso = hora_fin_descenso  # Hora de fin de descenso del cliente
+        self.id_cliente = id_cliente  # ID del cliente
+        self.estado_alfombra = e_alfombra  # Estado de la alfombra (L, O, EL, ES)
+        self.cola = cola  # Cola de clientes esperando (lista de objetos Cliente)
+
+    def to_json(self):
+        return {
+            "evento": self.evento,
+            "reloj": self.reloj,
+            "rnd_ll": self.rnd_ll,
+            "tiempo_ll": self.tiempo_ll,
+            "hora_ll": self.hora_ll,
+            "tiempo_descenso": self.tiempo_descenso,
+            "hora_fin_descenso": self.hora_fin_descenso,
+            "id_cliente": self.id_cliente,
+            "estado_alfombra": self.estado_alfombra,
+            "cola": self.cola  # Convertir objetos Cliente a dict
+        }
+
 
 class Estado():
     def __init__(self, nombre):
@@ -48,7 +74,7 @@ class Alfombra():
         self.cola = []
 
 class Evento():
-    def __init__(self, tipo, reloj): #(..., cliente=None):
+    def __init__(self, tipo, reloj, cliente=""): #(..., cliente=None):
         self.tipo = tipo  # Tipo de evento (0: Inicialización, 1: Llegada Cliente, 2: Fin Descenso, 3: Inicio Suspensión, 4: Fin Suspensión, 5: Inicio Limpieza, 6: Fin Limpieza)
         self.nombre = {
             0: "Inicialización",
@@ -57,12 +83,14 @@ class Evento():
             3: "Inicio Suspensión", # se deshabilitan las llegadas de clientes
             4: "Fin Suspensión",
             5: "Inicio Limpieza",  # se deshabilitan las llegadas de clientes
-            6: "Fin Limpieza"
+            6: "Fin Limpieza",
+            7: "Fin simulacion"
         }.get(tipo, "Evento Desconocido")
         self.reloj = reloj
-        #self.cliente = cliente  # Cliente asociado al evento (si aplica)
+        self.cliente = cliente  # Cliente asociado al evento (si aplica)
 
     def __repr__(self):
-        return f"Evento(tipo={self.tipo}, reloj={self.reloj}, nombre={self.nombre})"
+        return f"Evento(tipo={self.tipo}, reloj={self.reloj}, nombre={self.nombre}, cliente={self.cliente})"
+
 
 

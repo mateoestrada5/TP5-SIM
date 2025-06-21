@@ -29,15 +29,20 @@ def runge_kutta(t0=0, x0=0, h=0.001, xf=120, ec_a=0.03, ec_b=-0.2, ec_c=5):
         t += h
         x = x_sig
 
+
+
     runge_kutta_json["lineas"].append({"t": t, "x": x, "k1": '', "k2": '', "k3": '', "k4": '', "x_sig": ''})
 
-    # TODO-log
-    for linea in runge_kutta_json["lineas"]:
-        print(linea)
+    t_final = t
+    x_final = x
+
+    # # TODO-log
+    # for linea in runge_kutta_json["lineas"]:
+    #     print(linea)
 
     # TODO-log
     # print(f"t: {t:0.4f} | x: {x:0.4f} ////////////// Final //////////////")
 
-    return runge_kutta_json
+    return t_final, x_final, runge_kutta_json
 
 runge_kutta(h=0.001)

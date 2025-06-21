@@ -16,3 +16,8 @@ def insertar_ordenado(eventos, evento):
                 eventos.insert(i, evento)
                 break
 
+def buscar_cliente_por_id(clientes, id_cliente):
+    for cliente in clientes:
+        if cliente.id_cliente == id_cliente:
+            return cliente
+    return None
