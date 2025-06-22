@@ -217,23 +217,14 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
         )
 
         ve = vector_estado.to_json()
+        eventos_json.append(ve)
         # print(ve)
-        print(f'{ve["evento"]:<30} {ve["reloj"]:<10} | {ve["rnd_ll"]:<10} | {ve["tiempo_ll"]:<10} | {ve["hora_ll"]:<10} | {ve["tiempo_descenso"]:<15} | {ve["hora_fin_descenso"]:<20} | {ve["id_cliente"]:<10} | {ve["estado_alfombra"]:<15} | {ve["cola"]:<10}')
+        # print(f'{ve["evento"]:<30} {ve["reloj"]:<10} | {ve["rnd_ll"]:<10} | {ve["tiempo_ll"]:<10} | {ve["hora_ll"]:<10} | {ve["tiempo_descenso"]:<15} | {ve["hora_fin_descenso"]:<20} | {ve["id_cliente"]:<10} | {ve["estado_alfombra"]:<15} | {ve["cola"]:<10}')
 
         e += 1
 
-    # vector_estado = Vector_estado(
-    #     f'{eventos[e].nombre} ({cliente_atendido.id_cliente})', f'{eventos[e].reloj:0.2f}', rnd_ll=' ', tiempo_ll=' ',
-    #     hora_ll=prox_cliente.hora_llegada, tiempo_descenso=tiempo_descenso, hora_fin_descenso=fin_descenso, id_cliente=id_fin_descenso, e_alfombra=alfombra.estado.nombre, cola=len(cola)
-    # )
-
-
-    # print(f'{"Evento":<30} {"Reloj":<10} - {"RND LL":<10} - {"Tiempo LL":<10} - {"Hora LL":<10} - {"Tiempo Descenso":<15} - {"Hora Fin Descenso":<20} - {"ID Cliente":<10} - {"Estado Alfombra":<15} - {"Cola":<10}')
-    #
-    # for ejson in eventos_json:
-    #
-    #     print(f'{ejson["evento"]:<30} {ejson["reloj"]:<10} - {ejson["rnd_ll"]:<10} - {ejson["tiempo_ll"]:<10} - {ejson["hora_ll"]:<10} - {ejson["tiempo_descenso"]:<15} - {ejson["hora_fin_descenso"]:<20} - {ejson["id_cliente"]:<10} - {ejson["estado_alfombra"]:<15}')
-    #     #print(f'{ejson["evento"]} {ejson["reloj"]:0.4f} - {ejson["rnd_ll"]} - {ejson["tiempo_ll"]} - {ejson["hora_ll"]} - {ejson["tiempo_descenso"]} - {ejson["hora_fin_descenso"]} - {ejson["id_cliente"]} - {ejson["estado_alfombra"]} - {ejson["cola"]}')
+    for ejson in eventos_json:
+        print(ejson)
 
 
 
