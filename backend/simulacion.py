@@ -1,5 +1,5 @@
-from backend.modules.runge_kutta import runge_kutta
-from backend.modules.utilities import buscar_cliente_por_id, eliminar_cliente_por_id
+from modules.runge_kutta import runge_kutta
+from modules.utilities import buscar_cliente_por_id, eliminar_cliente_por_id
 from modules.utilities import insertar_ordenado
 from modules.clases import Estado, Cliente, Alfombra, Evento, Vector_estado
 import random as r
