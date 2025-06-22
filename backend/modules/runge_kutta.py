@@ -1,5 +1,4 @@
 def ecuacion_diferencial(x, a, b, c):
-    # return 0.5 * x**2 - 0.2 * x + 5
     return a * x**2 + b * x + c
 
 def runge_kutta(t0=0, x0=0, h=0.001, xf=120, ec_a=0.5, ec_b=-0.2, ec_c=5):

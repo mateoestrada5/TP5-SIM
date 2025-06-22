@@ -226,8 +226,6 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
     for ejson in eventos_json:
         print(ejson)
 
-
-
     return eventos_json  # Retornar los eventos procesados en formato JSON
 
 simular()
