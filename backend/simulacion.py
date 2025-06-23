@@ -6,20 +6,24 @@ from modules.utilities import insertar_ordenado
 from modules.clases import Estado, Cliente, Alfombra, Evento, Vector_estado
 import random as r
 import pandas as pd
+from tabulate import tabulate
 
 
-def llegada_cliente(reloj, rnd, id_ultimo_cliente, lim_inferior, lim_superior):
+
+def llegada_cliente(reloj, rnd, lim_inferior, lim_superior):
 
     tiempo_llegada = round(lim_inferior + (lim_superior - lim_inferior) * rnd,4)
     hora_llegada = round(reloj + tiempo_llegada, 4)
-    prox_cliente = Cliente(id_ultimo_cliente + 1, Estado("C"), hora_llegada)
-    return tiempo_llegada, prox_cliente
+    # prox_cliente = Cliente(id_ultimo_cliente + 1, Estado("C"), hora_llegada)
+    return tiempo_llegada
 
 
 def simular(semilla=None): # deberia recibir la situacion inicial de la simulacion
     reloj = 0; cola = []
-    lim_inferior = 2.25; lim_superior = 2.75
+    lim_inferior = 3; lim_superior = 5
     # lim_inferior = 5; lim_superior = 13
+    hora_limite_espera_maxima = 10
+    hora_limite_cola_maxima = 20
 
     cola = [] # -> clientes en cola
     clientes = [] # -> clientes del sistema
@@ -33,8 +37,8 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
     id_ultimo_cliente = 0  # ID del último cliente procesado
     fin_descenso = ''
     id_fin_descenso = ''
-    periodo_suspension = 40  # Periodo de suspensión de la alfombra
-    periodo_limpieza = 80
+    periodo_suspension = 30  # Periodo de suspensión de la alfombra
+    periodo_limpieza = 50
     duracion_limpieza = 10
     prox_limpieza = ''
     prox_suspension = ''  # Proximo evento de limpieza
@@ -60,11 +64,17 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
     inicializacion = Evento(0, reloj)  # Evento de inicialización
     eventos.append(inicializacion)
 
+    clientes_en_sistema = []  # Contador de clientes en el sistema
 
-    # print(f'{"Evento":<20} {"id":<5}|{"Reloj":^10} | {"RND LL":<10} | {"Tiempo LL":<10} | {"Hora LL":<10} - {"Tiempo Descenso":<15} - {"Hora Fin Descenso":<20} - {"ID Cliente":<10} - {"Estado Alfombra":<15} - {"Cola":<10}')
-    print(f'{"Evento":<20} {"id":<5}|{"Reloj":^10} | {"RND LL":<10} | {"Tiempo LL":<10} | {"Hora LL":<10} - {"Tiempo Descenso":<15} - {"Hora Fin Descenso":<20} - {"ID Cliente":<10} - {"Prox Susp.":<10} - {"Prox Limpieza":<10} - {"Fin Limpieza":<10} - {"Estado Alfombra":<15} - {"Cola":<10}')
+    espera_cola_maxima = 0  # Tiempo máximo de espera en cola
+    cola_maxima = 0
+    cola_maxima_actual = 0  # Cola máxima actual
+    contador_clientes_comienzan_descenso = 0
+    acumulador_tiempos_espera = 0  # Acumulador de tiempos de espera de los clientes atendidos
 
-    while e < len(eventos) and eventos[e].tipo != 7 and reloj < 300:  # Mientras no sea el evento de fin de simulación o no se hayan procesado todos los eventos
+
+
+    while e < 100 and eventos[e].tipo != 7 and reloj < 100:  # Mientras no sea el evento de fin de simulación o no se hayan procesado todos los eventos
 
         # print(f'evento {e} -> len(eventos) = {len(eventos)}')
 
@@ -73,7 +83,8 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
 
         # llegada_cliente --
         rnd_ll = ''
-        tiempo_llegada = ''
+        # tiempo_llegada = ''
+        tiempo_ll_prox_cliente = ''
 
         # fin_descenso --
         tiempo_descenso = ''
@@ -82,15 +93,19 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
         fin_limpieza = ''
 
 
+
+
         #todo=================================================================================================================================================
         if eventos[e].tipo == 0:
             # definir llegada proximo cliente - crear alfombra en estado libre y con cola vacia - definir proximo evento de suspension - definir proximo evento de limpieza
             alfombra = Alfombra(e_libre)
+
             rnd_ll = round(r.random(),4)
-            tiempo_llegada, prox_cliente = llegada_cliente(reloj, rnd_ll, id_ultimo_cliente, lim_inferior, lim_superior)
-            evento_inicializacion = Evento(1, prox_cliente.hora_llegada, cliente=prox_cliente.id_cliente)  # Evento de llegada de cliente
-            clientes.append(prox_cliente)  # Agregar cliente a la lista de clientes del sistema
-            insertar_ordenado(eventos, evento_inicializacion)
+            tiempo_ll_prox_cliente = llegada_cliente(reloj, rnd_ll, lim_inferior, lim_superior)
+            hora_ll = round(reloj + tiempo_ll_prox_cliente, 4)
+
+            evento_llegada_cliente = Evento(1, hora_ll, cliente=id_ultimo_cliente + 1)  # Evento de llegada de cliente  # Agregar cliente a la lista de clientes del sistema
+            insertar_ordenado(eventos, evento_llegada_cliente)
 
             prox_suspension = round(reloj + periodo_suspension, 4)
             evento_suspension = Evento(3, prox_suspension)
@@ -99,27 +114,34 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
             insertar_ordenado(eventos, evento_suspension)
             insertar_ordenado(eventos, evento_limpieza)
 
-            hora_ll = prox_cliente.hora_llegada  # Hora de llegada del próximo cliente
-
             id_ultimo_cliente += 1  # Actualizar el ID del último cliente procesado
 
 
         #todo=================================================================================================================================================
         elif eventos[e].tipo == 1:  # Llegada de cliente solo si la bandera de suspendida es False
             if en_suspension or en_limpieza:
+                hora_ll = ''
+
+                # eventos.pop(e)
                 e += 1
                 continue
 
-            cliente_que_llego = buscar_cliente_por_id(clientes, eventos[e].cliente)
+            id_ultimo_cliente = eventos[e].cliente  # ID del último cliente procesado
+            cliente_que_llego = Cliente(eventos[e].cliente, e_creado, eventos[e].reloj)  # Crear cliente con el ID del evento y el reloj actual
+
             rnd_ll = round(r.random(), 4)
-            tiempo_llegada, prox_cliente = llegada_cliente(eventos[e].reloj, rnd_ll, id_ultimo_cliente, lim_inferior, lim_superior)
-            e_llegada_cliente_prox = Evento(1, prox_cliente.hora_llegada, cliente=prox_cliente.id_cliente)  # Evento de llegada de cliente
+            tiempo_ll_prox_cliente = llegada_cliente(eventos[e].reloj, rnd_ll, lim_inferior, lim_superior)
+
+            hora_ll = round(eventos[e].reloj + tiempo_ll_prox_cliente, 4)  # Hora de llegada del próximo cliente
+
+
+            e_llegada_cliente_prox = Evento(1, hora_ll, cliente=(id_ultimo_cliente+1))  # Evento de llegada de cliente
             insertar_ordenado(eventos, e_llegada_cliente_prox)
-            clientes.append(prox_cliente)  # Agregar cliente a la lista de clientes del sistema
+            clientes.append(cliente_que_llego)  # Agregar cliente a la lista de clientes del sistema
+            clientes_en_sistema.append(cliente_que_llego)  # Agregar cliente a la lista de clientes en el sistema
 
             # si alfombra esta libre, ocuparla y definir fin_descenso -> cambiar estado del cliente a SA (siendo atendido)
             if alfombra.estado.es_libre():
-                # print(f'La alfombra está libre, ocupándola con el cliente {eventos[e].cliente}')
                 alfombra.estado = e_ocupado
                 cliente_que_llego.estado = e_siendo_atendido
                 tiempo_descenso = tiempo_descenso_rk
@@ -129,13 +151,21 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
                 evento_fin_descenso = Evento(2, fin_descenso, cliente=id_fin_descenso)
 
                 insertar_ordenado(eventos, evento_fin_descenso)
+                contador_clientes_comienzan_descenso += 1
+
+
+
             else:
                 cola.append(cliente_que_llego)  # Agregar cliente a la cola
                 cliente_que_llego.estado = e_esperando_atencion  # Cambiar el estado del cliente a esperando atención
 
-            id_cliente_atendido = cliente_que_llego.id_cliente
-            hora_ll = prox_cliente.hora_llegada
+                if len(cola) > cola_maxima:
+                    cola_maxima_actual = len(cola)
+                    if reloj < hora_limite_cola_maxima:
+                        cola_maxima = cola_maxima_actual
 
+            id_cliente_atendido = cliente_que_llego.id_cliente
+            # hora_ll = hora_ll_prox_cliente
 
             id_ultimo_cliente += 1  # Actualizar el ID del último cliente procesado
 
@@ -143,11 +173,27 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
         elif eventos[e].tipo == 2: # Fin de descenso
             cliente_atendido = buscar_cliente_por_id(clientes, eventos[e].cliente)
             id_cliente_atendido = cliente_atendido.id_cliente
+
+
+
+
+
+            clientes_en_sistema.remove(cliente_atendido)  # Eliminar cliente del sistema
+
             if cola:
-                cola[0].estado = e_siendo_atendido  # Cambiar estado del primer cliente de la cola a siendo atendido
+                cliente_a_ser_atendido = cola[0]
+                cliente_a_ser_atendido.estado = e_siendo_atendido  # Cambiar estado del primer cliente de la cola a siendo atendido
                 tiempo_descenso = tiempo_descenso_rk
                 fin_descenso = round(eventos[e].reloj + tiempo_descenso_rk, 4)
-                id_fin_descenso = cola[0].id_cliente  # ID del cliente que está siendo atendido
+                id_fin_descenso = cliente_a_ser_atendido.id_cliente  # ID del cliente que está siendo atendido
+                contador_clientes_comienzan_descenso += 1
+
+                tiempo_espera_cliente = cliente_a_ser_atendido.calcular_tiempo_espera(reloj)
+                acumulador_tiempos_espera += round(tiempo_espera_cliente, 4)
+
+                if tiempo_espera_cliente > espera_cola_maxima and reloj <= hora_limite_espera_maxima:
+                    espera_cola_maxima = round(tiempo_espera_cliente, 4)
+
 
                 evento_fin_descenso = Evento(2, fin_descenso, cliente=cola[0].id_cliente)
                 cola.pop(0)
@@ -179,15 +225,12 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
                 insertar_ordenado(eventos, evento_fin_suspension)
                 # prox_suspension += periodo_suspension   # Actualizar el último inicio de suspensión
 
-
             elif en_limpieza:
                 prox_suspension = ult_inicio_suspension + periodo_suspension  # Proxima suspensión después de la limpieza
                 evento_prox_suspension = Evento(3, prox_suspension)
                 insertar_ordenado(eventos, evento_prox_suspension)
 
             elif cola or alfombra.estado.es_ocupado():
-
-                i = e + 1
                 # hora_ll = ''
                 en_suspension = True  # Activar la bandera de suspensión
                 ult_inicio_suspension = reloj  # Actualizar el último inicio de suspensión
@@ -196,23 +239,22 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
             e+=1
             continue # Continuar al siguiente evento sin procesar más eventos de llegada de clientes
 
+
         elif eventos[e].tipo == 4: # Fin de suspensión
             en_suspension = False  # Desactivar la bandera de suspensión
 
-            if reloj > prox_cliente.hora_llegada:
+            if hora_ll == '':
                 rnd_ll = round(r.random(),4)
-                tiempo_llegada, prox_cliente = llegada_cliente(reloj, rnd_ll, id_ultimo_cliente, lim_inferior, lim_superior)
-                clientes.append(prox_cliente)  # Agregar cliente a la lista de clientes del sistema
-                hora_ll = prox_cliente.hora_llegada  # Hora de llegada del próximo cliente
-                evento_llegada_cliente = Evento(1, prox_cliente.hora_llegada, cliente=prox_cliente.id_cliente) # restar uno  # Evento de llegada de cliente
+                tiempo_ll_prox_cliente = llegada_cliente(reloj, rnd_ll, lim_inferior, lim_superior)
+
+                hora_ll = round(tiempo_ll_prox_cliente + reloj, 4)  # Hora de llegada del próximo cliente
+                evento_llegada_cliente = Evento(1, hora_ll, cliente=id_ultimo_cliente) # restar uno  # Evento de llegada de cliente
                 insertar_ordenado(eventos, evento_llegada_cliente)
 
             prox_suspension = round(reloj + periodo_suspension,4)
             evento_prox_suspension = Evento(3, prox_suspension)  # Evento de inicio de suspensión
             insertar_ordenado(eventos, evento_prox_suspension)
             alfombra.estado = e_libre
-
-
 
 
         #todo=================================================================================================================================================
@@ -224,57 +266,83 @@ def simular(semilla=None): # deberia recibir la situacion inicial de la simulaci
                 evento_prox_suspension = Evento(3, prox_suspension)  # Evento de fin de suspensión
                 insertar_ordenado(eventos, evento_prox_suspension)
 
-            en_limpieza = True
-            alfombra.estado = e_en_limpieza
+
+            if alfombra.estado.es_libre():
+                fin_limpieza = round(reloj + duracion_limpieza, 4)  # Hora de finalización de la limpieza
+                e_fin_limpieza = Evento(6, reloj + duracion_limpieza)  # Evento de fin de limpieza
+                insertar_ordenado(eventos, e_fin_limpieza)
+
+
+            if cola or alfombra.estado.es_ocupado():
+                alfombra.estado = e_en_limpieza
+                en_limpieza = True
             prox_limpieza = ''
             # Eliminar eventos de llegada de clientes hasta que se vacíe la cola
             e += 1
             continue  # Continuar al siguiente evento sin procesar más eventos de llegada de clientes
 
         elif eventos[e].tipo == 6:  # Fin de limpieza
-            # print(f'Evento de fin de limpieza: {eventos[e].reloj} -------------------------------------------------------------')
             en_limpieza = False  # Desactivar la bandera de limpieza
-            rnd_ll = round(r.random(),4)
-            tiempo_llegada, prox_cliente = llegada_cliente(reloj, rnd_ll, id_ultimo_cliente, lim_inferior, lim_superior)
-            clientes.append(prox_cliente)  # Agregar cliente a la lista de clientes del sistema
-            evento_llegada_cliente = Evento(1, prox_cliente.hora_llegada, cliente=prox_cliente.id_cliente)  # Evento de llegada de cliente
-            insertar_ordenado(eventos, evento_llegada_cliente)
 
-            prox_limpieza = reloj + periodo_limpieza
+            if hora_ll == '':
+                rnd_ll = round(r.random(),4)
+                tiempo_ll_prox_cliente = llegada_cliente(reloj, rnd_ll, lim_inferior, lim_superior)
+
+                hora_ll = round(reloj + tiempo_ll_prox_cliente, 4)  # Hora de llegada del próximo cliente
+                evento_llegada_cliente = Evento(1, hora_ll , cliente=id_ultimo_cliente)  # Evento de llegada de cliente
+                insertar_ordenado(eventos, evento_llegada_cliente)
+
+            prox_limpieza = round(reloj + periodo_limpieza, 9)
             evento_prox_limpieza = Evento(5, prox_limpieza)
             insertar_ordenado(eventos, evento_prox_limpieza)
-
-            hora_ll = prox_cliente.hora_llegada  # Hora de llegada del próximo cliente
             alfombra.estado = e_libre
 
 
-        #todo: VAMOS A NECESITAR AGREGAR UN EVENTO DE INICIO DE SUSPENSION Y LIMPIEZA.
-        #todo: YA QUE ES UN EVENTO QUE ENCIENDE LA BANDERA <suspendido>
-        #todo: Y ELIMINA DE <eventos> LOS EVENTOS SIGUEINTES DE TIPO 1:llegada_cliente
-        #todo: HASTA QUE SE VACIE LA COLA (TODOS LOS EVENTOS DE TIPO 2:fin_descenso)
-
-        #todo son eventos que no se ven en los vectores_estado
-
         vector_estado = Vector_estado(
-            f'{eventos[e].nombre}', f'{eventos[e].reloj:0.2f}', id_cliente=id_cliente_atendido, rnd_ll=rnd_ll, tiempo_ll=tiempo_llegada,
-            hora_ll=hora_ll, tiempo_descenso=tiempo_descenso, hora_fin_descenso=fin_descenso, id_cliente_descenso=id_fin_descenso, prox_suspension=prox_suspension, prox_limpieza=prox_limpieza, fin_limpieza=fin_limpieza, e_alfombra=alfombra.estado.nombre, cola=len(cola)
+            f'{eventos[e].nombre}', f'{eventos[e].reloj:0.2f}', id_cliente=id_cliente_atendido, rnd_ll=rnd_ll, tiempo_ll=tiempo_ll_prox_cliente,
+            hora_ll=hora_ll, tiempo_descenso=tiempo_descenso, hora_fin_descenso=fin_descenso, id_cliente_descenso=id_fin_descenso, prox_suspension=prox_suspension,
+            prox_limpieza=prox_limpieza, fin_limpieza=fin_limpieza, e_alfombra=alfombra.estado.nombre, cola=len(cola), acumulador_tiempo_espera=round(acumulador_tiempos_espera, 4),
+            clientes_comienzan_atencion=contador_clientes_comienzan_descenso, cola_maxima_actual=cola_maxima_actual, espera_maxima_cola=espera_cola_maxima, clientes=clientes_en_sistema
         )
 
         ve = vector_estado.to_json()
         eventos_json.append(ve)
-        # print(ve)
-        # print(f'{ve["evento"]:<20} {ve["id_cliente"]:<5} {ve["reloj"]:<10} | {ve["rnd_ll"]:<10} | {ve["tiempo_ll"]:<10} | {ve["hora_ll"]:<10} | {ve["tiempo_descenso"]:<15} | {ve["hora_fin_descenso"]:<20} | {ve["id_cliente_descenso"]:<10} | {ve["prox_suspension"]:<10} | {ve["prox_limpieza"]:<10} | {ve["fin_limpieza"]:<10} | {ve["estado_alfombra"]:<15} | {ve["cola"]:<10}')
 
+
+
+        # print(ve)
+        # print(f'{ve["evento"]:<20} {ve["id_cliente"]:<5} {ve["reloj"]:<10} | {ve["rnd_ll"]:<10} | {ve["tiempo_ll"]:<10} | {ve["hora_ll"]:<10} | {ve["tiempo_descenso"]:<15} | {ve["hora_fin_descenso"]:<20} | {ve["id_cliente_descenso"]:<10} | {ve["prox_suspension"]:<10} | {ve["prox_limpieza"]:<10} | {ve["fin_limpieza"]:<10} | {ve["estado_alfombra"]:<15} | {ve["cola"]:<10} | [ {ve["acumulador_tiempo_espera"]:<15} | {ve["clientes_comienzan_atencion"]:<5} | {ve["cola_maxima_actual"]:<5} | {ve["espera_maxima_cola"]:<5} ] |{ve["clientes"]:<5}')
+
+        # configurar pd
+
+        # for cliente in clientes_en_sistema:
+        #     print(cliente.to_string())
         e += 1
+
+    # print(contador_clientes_comienzan_descenso)
+    # print(acumulador_tiempos_espera)
+    # print(espera_cola_maxima)
+    # promedio_tiempo_espera = round(acumulador_tiempos_espera / contador_clientes_comienzan_descenso, 4) if contador_clientes_comienzan_descenso > 0 else 0
+    # print(f'\nCantidad de clientes atendidos: {contador_clientes_comienzan_descenso}')
+    # print(f'promedio tiempo de espera en cola: {promedio_tiempo_espera} segundos')
+    # print(f'Cola maxima de clientes: {cola_maxima} clientes')
+
+    pd.set_option('display.max_rows', None)      # Mostrar todas las filas
+    pd.set_option('display.max_columns', None)   # Mostrar todas las columnas
+    pd.set_option('display.width', None)         # No limitar el ancho del display
+    pd.set_option('display.max_colwidth', None)  # Mostrar contenido completo de las celdas
+    salida = pd.DataFrame(eventos_json)
+    print(tabulate(salida, headers='keys', tablefmt='github', stralign='right', numalign='right'))
 
 
     # print(f'Cantidad de eventos procesados: {len(eventos_json)}')
     # for e in eventos:
     #     print(f'{e.nombre:<20} {e.reloj:<10} | {e.cliente:<10}')
 
-    for ejson in eventos_json:
-        print(ejson)
+    # for ejson in eventos_json:
+    #     print(ejson)
 
     return eventos_json  # Retornar los eventos procesados en formato JSON
 
 simular()
+

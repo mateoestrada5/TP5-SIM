@@ -1,22 +1,8 @@
 
-# todo esta clase no se usa, se puede eliminar
-class gestor_simulacion():
-    def __init__(self):
-        self.simulaciones = []
-
-    def agregar_simulacion(self, simulacion):
-        self.simulaciones.append(simulacion)
-
-    def obtener_simulaciones(self):
-        return self.simulaciones
-
-    def eliminar_simulacion(self, simulacion):
-        if simulacion in self.simulaciones:
-            self.simulaciones.remove(simulacion)
 
 
 class Vector_estado():
-    def __init__(self, evento, reloj, id_cliente="", rnd_ll="", tiempo_ll="", hora_ll="", tiempo_descenso="", hora_fin_descenso="", id_cliente_descenso="", prox_suspension="", prox_limpieza="", fin_limpieza="", e_alfombra="", cola=""):
+    def __init__(self, evento, reloj, id_cliente="", rnd_ll="", tiempo_ll="", hora_ll="", tiempo_descenso="", hora_fin_descenso="", id_cliente_descenso="", prox_suspension="", prox_limpieza="", fin_limpieza="", e_alfombra="", cola="", acumulador_tiempo_espera=0, clientes_comienzan_atencion=0, cola_maxima_actual=0, espera_maxima_cola=0, clientes=[]):
         self.rnd = 0
         self.evento = evento  # Evento actual
         self.reloj = reloj  # Reloj de la simulación
@@ -32,6 +18,18 @@ class Vector_estado():
         self.fin_limpieza = fin_limpieza
         self.estado_alfombra = e_alfombra  # Estado de la alfombra (L, O, EL, ES)
         self.cola = cola  # Cola de clientes esperando (lista de objetos Cliente)
+        self.acumulador_tiempo_espera = acumulador_tiempo_espera
+        self.clientes_comienzan_atencion = clientes_comienzan_atencion
+        self.cola_maxima_actual = cola_maxima_actual
+        self.espera_maxima_cola = espera_maxima_cola
+        self.clientes = clientes  # Lista de clientes (objetos Cliente)
+
+    def clientes_to_dict(self):
+        cat = ''
+        for cliente in self.clientes:
+            cat += f"{cliente.id_cliente} ({cliente.estado.nombre}) "
+        return cat
+
 
     def to_json(self):
         return {
@@ -48,7 +46,12 @@ class Vector_estado():
             "prox_limpieza": self.prox_limpieza,
             "fin_limpieza": self.fin_limpieza,
             "estado_alfombra": self.estado_alfombra,
-            "cola": self.cola  # Convertir objetos Cliente a dict
+            "cola": self.cola,  # Convertir objetos Cliente a dict
+            "acumulador_tiempo_espera": self.acumulador_tiempo_espera,
+            "clientes_comienzan_atencion": self.clientes_comienzan_atencion,
+            "cola_maxima_actual": self.cola_maxima_actual,
+            "espera_maxima_cola": self.espera_maxima_cola,
+            "clientes": self.clientes_to_dict()  # Convertir objetos Cliente a dict
         }
 
 
@@ -75,6 +78,9 @@ class Cliente():
 
     def calcular_tiempo_espera(self, reloj):
         return reloj - self.hora_llegada if self.hora_llegada else 0
+
+    def to_string(self):
+        return f"Cliente(id={self.id_cliente}, estado={self.estado.nombre}, hora_llegada={self.hora_llegada})"
 
 class Alfombra():
     def __init__(self, estado):
