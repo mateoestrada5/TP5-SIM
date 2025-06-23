@@ -16,29 +16,37 @@ class gestor_simulacion():
 
 
 class Vector_estado():
-    def __init__(self, evento, reloj, rnd_ll="", tiempo_ll="", hora_ll="", tiempo_descenso="", hora_fin_descenso="", id_cliente="", e_alfombra="", cola=""):
+    def __init__(self, evento, reloj, id_cliente="", rnd_ll="", tiempo_ll="", hora_ll="", tiempo_descenso="", hora_fin_descenso="", id_cliente_descenso="", prox_suspension="", prox_limpieza="", fin_limpieza="", e_alfombra="", cola=""):
         self.rnd = 0
         self.evento = evento  # Evento actual
         self.reloj = reloj  # Reloj de la simulación
+        self.id_cliente = id_cliente  # ID del cliente (si aplica)
         self.rnd_ll = rnd_ll  # RND de llegada del cliente
         self.tiempo_ll = tiempo_ll  # Tiempo de llegada del cliente
         self.hora_ll = hora_ll  # Hora de llegada del cliente
         self.tiempo_descenso = tiempo_descenso  # Tiempo de descenso del cliente
         self.hora_fin_descenso = hora_fin_descenso  # Hora de fin de descenso del cliente
-        self.id_cliente = id_cliente  # ID del cliente
+        self.id_cliente_descenso = id_cliente_descenso  # ID del cliente
+        self.prox_suspension = prox_suspension  # Hora de la próxima suspensión
+        self.prox_limpieza = prox_limpieza
+        self.fin_limpieza = fin_limpieza
         self.estado_alfombra = e_alfombra  # Estado de la alfombra (L, O, EL, ES)
         self.cola = cola  # Cola de clientes esperando (lista de objetos Cliente)
 
     def to_json(self):
         return {
             "evento": self.evento,
+            "id_cliente": self.id_cliente,
             "reloj": self.reloj,
             "rnd_ll": self.rnd_ll,
             "tiempo_ll": self.tiempo_ll,
             "hora_ll": self.hora_ll,
             "tiempo_descenso": self.tiempo_descenso,
             "hora_fin_descenso": self.hora_fin_descenso,
-            "id_cliente": self.id_cliente,
+            "id_cliente_descenso": self.id_cliente_descenso,
+            "prox_suspension": self.prox_suspension,
+            "prox_limpieza": self.prox_limpieza,
+            "fin_limpieza": self.fin_limpieza,
             "estado_alfombra": self.estado_alfombra,
             "cola": self.cola  # Convertir objetos Cliente a dict
         }
