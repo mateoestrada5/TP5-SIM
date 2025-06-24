@@ -35,10 +35,6 @@ def runge_kutta(t0=0, x0=0, h=0.001, xf=120, ec_a=0.5, ec_b=-0.2, ec_c=5):
     t_final = t
     x_final = x
 
-    # # TODO-log
-    # for linea in runge_kutta_json["lineas"]:
-    #     print(linea)
-
     # TODO-log
     # print(f"t: {t:0.4f} | x: {x:0.4f} ////////////// Final //////////////")
 
