@@ -13,7 +13,7 @@ const SimulationLogic = () => {
     return (
         <div className="relative inline-block">
             <button
-                className="p-3 bg-gray-700 text-white rounded-full text-xl hover:bg-gray-600 transition cursor-pointer"
+                className="p-3 bg-zinc-700 text-white rounded-full text-xl hover:bg-zinc-600 transition cursor-pointer"
                 onClick={() => setShowModalSimulationLogic(true)}
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
@@ -33,7 +33,7 @@ const SimulationLogic = () => {
                 >
                     <div className="bg-zinc-900 rounded-xl shadow-[0_0_40px_5px_white] shadow-white/10 p-8 max-w-2xl w-full relative">
                         <button
-                            className="absolute top-2 right-2 text-gray-500 hover:text-white text-2xl cursor-pointer"
+                            className="absolute top-2 right-2 text-zinc-500 hover:text-white text-2xl cursor-pointer"
                             onClick={() => setShowModalSimulationLogic(false)}
                             aria-label="Cerrar"
                         >
@@ -43,17 +43,17 @@ const SimulationLogic = () => {
                         <div className="space-y-4">
                             <div>
                                 <h4 className="font-semibold text-lg mb-1">Objetos | Estados de Objeto</h4>
-                                <table className="min-w-full text-sm text-left border border-gray-700 mb-2">
+                                <table className="min-w-full text-sm text-left border border-zinc-700 mb-2">
                                     <thead>
                                         <tr>
-                                            <th className="border-b border-gray-700 px-3 py-1">Nombre</th>
-                                            <th className="border-b border-gray-700 px-3 py-1">Estados</th>
+                                            <th className="border-b border-zinc-700 px-3 py-1">Nombre</th>
+                                            <th className="border-b border-zinc-700 px-3 py-1">Estados</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td className="border-b border-gray-700 px-3 py-1">Cliente</td>
-                                            <td className="border-b border-gray-700 px-3 py-1">Creado, Esperando Atención, Siendo Atendido</td>
+                                            <td className="border-b border-zinc-700 px-3 py-1">Cliente</td>
+                                            <td className="border-b border-zinc-700 px-3 py-1">Creado, Esperando Atención, Siendo Atendido</td>
                                         </tr>
                                         <tr>
                                             <td className="px-3 py-1">Alfombra</td>

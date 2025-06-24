@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IoMdSettings } from "react-icons/io";
 
-const ConfigurationForm = ({ configParams, onChangeConfig, triggerNotification }) => {
+const ConfigurationForm = ({longitudAlfombra, onChangeLongitudAlfombra, onChangeConfig, triggerNotification, setSimulationData }) => {
     const [formData, setFormData] = useState({
         condicionCorte: "cantidadEventos",
         tiempoLimite: "",
@@ -12,7 +12,7 @@ const ConfigurationForm = ({ configParams, onChangeConfig, triggerNotification }
         periodoSuspension: 40,
         periodoLimpieza: 4,
         duracionLimpieza: 20,
-        longitudAlfombra: 120,
+        longitudAlfombra: longitudAlfombra,
         colaMaximaHoras: 10,
         cantidadEventosVisualizar: 300,
         eventoInicial: 1,
@@ -28,6 +28,7 @@ const ConfigurationForm = ({ configParams, onChangeConfig, triggerNotification }
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setSimulationData([])
         if (triggerNotification) triggerNotification();
         onChangeConfig(formData);
     };
@@ -226,8 +227,8 @@ const ConfigurationForm = ({ configParams, onChangeConfig, triggerNotification }
                     <input
                         type="number"
                         name="longitudAlfombra"
-                        value={formData.longitudAlfombra}
-                        onChange={handleChange}
+                        value={longitudAlfombra}
+                        onChange={(e) => onChangeLongitudAlfombra(Number(e.target.value))}
                         min={0}
                         required
                         className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"

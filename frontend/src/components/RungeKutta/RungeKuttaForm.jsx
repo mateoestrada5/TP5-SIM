@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IoMdSettings } from "react-icons/io";
 
-const RungeKuttaForm = ({rungeKuttaParams, onChangeRK, triggerNotification}) => {
+const RungeKuttaForm = ({xFinal, onChangeXFinal, onChangeRK, triggerNotification, setSimulationData}) => {
     const [formData, setFormData] = useState({
         t0: 0,
         x0: 0,
@@ -9,7 +9,7 @@ const RungeKuttaForm = ({rungeKuttaParams, onChangeRK, triggerNotification}) => 
         ecuacionA: 0.5,
         ecuacionB: -0.2,
         ecuacionC: 5,
-        xFinal: 120,
+        xFinal: xFinal,
     });
 
     const handleChange = (e) => {
@@ -22,6 +22,7 @@ const RungeKuttaForm = ({rungeKuttaParams, onChangeRK, triggerNotification}) => 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setSimulationData([])
         if (triggerNotification) triggerNotification();
         onChangeRK(formData);
     };
@@ -121,8 +122,8 @@ const RungeKuttaForm = ({rungeKuttaParams, onChangeRK, triggerNotification}) => 
                     <input
                         type="number"
                         name="xFinal"
-                        value={formData.xFinal}
-                        onChange={handleChange}
+                        value={xFinal}
+                        onChange={(e) => onChangeXFinal(Number(e.target.value))}
                         step="any"
                         min="0"
                         required
