@@ -12,11 +12,11 @@ const RungeKuttaLogic = ({ rungeKuttaParams, rungeKuttaResults }) => {
     // Fórmulas de Runge-Kutta de orden 4
     const rk4Latex = `
             \\begin{aligned}
-            k_1 &= h \\cdot f(x_n, y_n) \\\\
-            k_2 &= h \\cdot f\\left(x_n + \\frac{h}{2},\\ y_n + \\frac{1}{2} k_1 \\right) \\\\
-            k_3 &= h \\cdot f\\left(x_n + \\frac{h}{2},\\ y_n + \\frac{1}{2} k_2 \\right) \\\\
-            k_4 &= h \\cdot f\\left(x_n + h,\\ y_n + k_3 \\right) \\\\
-            y_{n+1} &= y_n + \\frac{1}{6} (k_1 + 2 k_2 + 2 k_3 + k_4)
+            k_1 &= f(x_n, y_n) \\\\
+            k_2 &= f\\left(x_n + \\frac{h}{2},\\ y_n + \\frac{h}{2} k_1 \\right) \\\\
+            k_3 &= f\\left(x_n + \\frac{h}{2},\\ y_n + \\frac{h}{2} k_2 \\right) \\\\
+            k_4 &= f\\left(x_n + h,\\ y_n + h k_3 \\right) \\\\
+            y_{n+1} &= y_n + \\frac{h}{6} \\left( k_1 + 2 k_2 + 2 k_3 + k_4 \\right)
             \\end{aligned}
         `;
 

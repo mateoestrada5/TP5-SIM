@@ -1,21 +1,25 @@
 import React, { useState } from "react";
 import { IoMdSettings } from "react-icons/io";
 
-const ConfigurationForm = ({longitudAlfombra, onChangeLongitudAlfombra, onChangeConfig, triggerNotification, setSimulationData }) => {
+const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChangeConfig, triggerNotification, setSimulationData }) => {
+    const [isDirty, setIsDirty] = useState(false);
+
     const [formData, setFormData] = useState({
-        condicionCorte: "cantidadEventos",
+        semilla: "",
         tiempoLimite: "",
         clienteX: "",
-        cantidadEventos: 1000,
+        cantidadEventos: "",
+        horaInicio: 0,
         frecuenciaLlegadaMin: 3.0,
         frecuenciaLlegadaMax: 4.5,
         periodoSuspension: 40,
         periodoLimpieza: 4,
         duracionLimpieza: 20,
         longitudAlfombra: longitudAlfombra,
-        colaMaximaHoras: 10,
+        colaEsperaMaximaHoras: 10,
         cantidadEventosVisualizar: 300,
         eventoInicial: 1,
+        condicionCorte: "",
     });
 
     const handleChange = (e) => {
@@ -24,19 +28,25 @@ const ConfigurationForm = ({longitudAlfombra, onChangeLongitudAlfombra, onChange
             ...prev,
             [name]: type === "number" ? Number(value) : value,
         }));
+        setIsDirty(true);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setSimulationData([])
         if (triggerNotification) triggerNotification();
-        onChangeConfig(formData);
+        const { condicionCorte, longitudAlfombra, ...formDataFiltered } = formData;
+        onChangeConfig(formDataFiltered);
+        setIsDirty(false);
     };
+
+    const isFormIncomplete =
+        !formData.condicionCorte || formData.condicionCorte === "";
 
     return (
         <form
             onSubmit={handleSubmit}
-            className="bg-zinc-900 p-8 rounded-xl shadow space-y-6 border border-zinc-700"
+            className="bg-zinc-900 min-h-175 p-8 rounded-xl shadow space-y-6 border border-zinc-700"
         >
             <div className="flex items-center gap-4 mb-6">
                 <IoMdSettings size={32} />
@@ -51,8 +61,7 @@ const ConfigurationForm = ({longitudAlfombra, onChangeLongitudAlfombra, onChange
                         name="semilla"
                         value={formData.semilla}
                         onChange={handleChange}
-                        min={1}
-                        required
+                        min={0}
                         className="w-40 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
                         placeholder="Ej: 1"
                     />
@@ -64,77 +73,95 @@ const ConfigurationForm = ({longitudAlfombra, onChangeLongitudAlfombra, onChange
                 <h2 className="font-bold text-md mb-2 text-zinc-100">Condición de corte</h2>
                 <div className="flex gap-8 items-center">
                     <label className="flex items-center gap-2 text-zinc-100">
-                        <input
-                            type="radio"
+                        <span>Seleccionar condición:</span>
+                        <select
                             name="condicionCorte"
-                            value="cantidadEventos"
-                            checked={formData.condicionCorte === "cantidadEventos"}
-                            onChange={handleChange}
-                        />
-                        Cantidad de Eventos
+                            value={formData.condicionCorte || ""}
+                            onChange={e => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    condicionCorte: e.target.value,
+                                    cantidadEventos: "",
+                                    tiempoLimite: "",
+                                    clienteX: ""
+                                }));
+                            }}
+                            className="ml-2 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">Seleccione...</option>
+                            <option value="cantidadEventos">Cantidad de Eventos</option>
+                            <option value="tiempoLimite">Tiempo Límite</option>
+                            <option value="clienteX">Hasta descenso de cliente X</option>
+                        </select>
                     </label>
-                    <label className="flex items-center gap-2 text-zinc-100">
-                        <input
-                            type="radio"
-                            name="condicionCorte"
-                            value="tiempoLimite"
-                            checked={formData.condicionCorte === "tiempoLimite"}
-                            onChange={handleChange}
-                        />
-                        Tiempo Límite (minuto máximo de simulación)
-                        <input
-                            type="number"
-                            name="tiempoLimite"
-                            value={formData.tiempoLimite}
-                            onChange={handleChange}
-                            min={1}
-                            disabled={formData.condicionCorte !== "tiempoLimite"}
-                            className="w-24 ml-2 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
-                            placeholder="Ej: 500"
-                        />
-                    </label>
-                    <label className="flex items-center gap-2 text-zinc-100">
-                        <input
-                            type="radio"
-                            name="condicionCorte"
-                            value="clienteX"
-                            checked={formData.condicionCorte === "clienteX"}
-                            onChange={handleChange}
-                        />
-                        Hasta descenso de cliente X
-                        <input
-                            type="number"
-                            name="clienteX"
-                            value={formData.clienteX}
-                            onChange={handleChange}
-                            min={1}
-                            disabled={formData.condicionCorte !== "clienteX"}
-                            className="w-24 ml-2 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
-                            placeholder="Ej: 50"
-                        />
-                    </label>
+                    {formData.condicionCorte === "cantidadEventos" && (
+                        <div className="flex items-center gap-2">
+                            <label className="text-zinc-100">Cantidad de Eventos:</label>
+                            <input
+                                type="number"
+                                name="cantidadEventos"
+                                value={formData.cantidadEventos}
+                                onChange={handleChange}
+                                min={1}
+                                required
+                                className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
+                                placeholder="Ej: 1000"
+                            />
+                        </div>
+                    )}
+                    {formData.condicionCorte === "tiempoLimite" && (
+                        <div className="flex items-center gap-2">
+                            <label className="text-zinc-100">Tiempo Límite:</label>
+                            <input
+                                type="number"
+                                name="tiempoLimite"
+                                value={formData.tiempoLimite}
+                                onChange={handleChange}
+                                min={1}
+                                required
+                                className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
+                                placeholder="Ej: 500"
+                            />
+                        </div>
+                    )}
+                    {formData.condicionCorte === "clienteX" && (
+                        <div className="flex items-center gap-2">
+                            <label className="text-zinc-100">Cliente X:</label>
+                            <input
+                                type="number"
+                                name="clienteX"
+                                value={formData.clienteX}
+                                onChange={handleChange}
+                                min={1}
+                                required
+                                className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
+                                placeholder="Ej: 50"
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
             <div className="grid grid-cols-3 gap-6">
+
                 {/* Campo 1 */}
                 <div className="flex items-center justify-around gap-5">
                     <label className="w-2/5 mb-0 font-medium text-zinc-100">
-                        Cantidad de Eventos (N)
-                        <span className="text-zinc-400 block text-xs">(por defecto 1000 eventos)</span>
+                        Hora de inicio de la simulación (minutos)
+                        <span className="text-zinc-400 block text-xs">(por defecto 0 minutos)</span>
                     </label>
                     <input
                         type="number"
-                        name="cantidadEventos"
-                        value={formData.cantidadEventos}
+                        name="periodoSuspension"
+                        value={formData.horaInicio}
                         onChange={handleChange}
-                        min={1}
                         required
+                        min={0}
                         className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
-                        placeholder="Ej: 1000"
-                        disabled={formData.condicionCorte !== "cantidadEventos"}
+                        placeholder="Ej: 40"
                     />
                 </div>
+
                 {/* Campo 2: Frecuencia de Llegada (min y max) */}
                 <div className="flex items-center justify-around gap-5">
                     <label className="w-2/5 mb-0 font-medium text-zinc-100">
@@ -243,8 +270,8 @@ const ConfigurationForm = ({longitudAlfombra, onChangeLongitudAlfombra, onChange
                     </label>
                     <input
                         type="number"
-                        name="colaMaximaHoras"
-                        value={formData.colaMaximaHoras}
+                        name="colaEsperaMaximaHoras"
+                        value={formData.colaEsperaMaximaHoras}
                         onChange={handleChange}
                         min={1}
                         required
@@ -287,13 +314,21 @@ const ConfigurationForm = ({longitudAlfombra, onChangeLongitudAlfombra, onChange
                     />
                 </div>
             </div>
-            <div className="flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center">
                 <button
                     type="submit"
-                    className="w-[90%] bg-blue-600 text-white py-2 mt-4 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                    disabled={isFormIncomplete}
+                    className={`w-[90%] py-2 mt-4 rounded-lg text-white text-center text-xl transition
+                        ${isFormIncomplete
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                        }`}
                 >
                     Aplicar Cambios
                 </button>
+                {isDirty && (
+                    <p className="mt-4 text-center text-yellow-300 ">Debe aplicar los cambios</p>
+                )}
             </div>
         </form>
     );

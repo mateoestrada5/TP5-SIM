@@ -6,8 +6,8 @@ const groupedColumns = [
     title: 'INFORMACIÓN PRINCIPAL',
     columns: [
       { label: 'NÚMERO', key: 'numero' },
-      { label: 'RELOJ', key: 'reloj' },
       { label: 'EVENTO (id_cliente_evento)', key: 'evento' },
+      { label: 'RELOJ', key: 'reloj' },
     ],
   },
   {
@@ -28,15 +28,12 @@ const groupedColumns = [
   },
   {
     title: 'SUSPENSIÓN',
-    columns: [
-      { label: 'PROXIMA SUSPENSIÓN', key: 'proxima_suspension' },
-    ],
+    columns: [{ label: 'PRÓXIMA SUSPENSIÓN', key: 'prox_suspension' }],
   },
   {
     title: 'LIMPIEZA',
     columns: [
-      { label: 'PROXIMA LIMPIEZA', key: 'proxima_limpieza' },
-      { label: 'TIEMPO LIMPIEZA', key: 'tiempo_limpieza' },
+      { label: 'PRÓXIMA LIMPIEZA', key: 'prox_limpieza' },
       { label: 'FIN DE LIMPIEZA', key: 'fin_limpieza' },
     ],
   },
@@ -45,6 +42,15 @@ const groupedColumns = [
     columns: [
       { label: 'ESTADO ALFOMBRA', key: 'estado_alfombra' },
       { label: 'COLA DE CLIENTE', key: 'cola' },
+    ],
+  },
+  {
+    title: 'MÉTRICAS',
+    columns: [
+      { label: 'ACUMULADOR TIEMPO ESPERA', key: 'acumulador_tiempo_espera' },
+      { label: 'CLIENTES EN ATENCIÓN', key: 'clientes_comienzan_atencion' },
+      { label: 'COLA MÁXIMA', key: 'cola_maxima_actual' },
+      { label: 'ESPERA MÁXIMA', key: 'espera_maxima_cola' },
     ],
   },
 ];
@@ -57,9 +63,9 @@ const Tabla = ({ data, rungeKuttaParams, rungeKuttaResults }) => {
   const groupColSpans = getGroupColSpans();
 
   return (
-    <div className='max-h-120 max-w-screen overflow-y-auto overflow-x-scroll border border-zinc-700'>
+    <div className='max-h-120 overflow-y-auto overflow-x-scroll border border-zinc-700'>
 
-      <table className="min-w-full  rounded-lg shadow-sm bg-zinc-800 ">
+      <table className="w-max rounded-lg shadow-sm bg-zinc-800 ">
         <thead className="sticky top-0 z-30">
           {/* Encabezado de grupos */}
           <tr>
@@ -79,8 +85,8 @@ const Tabla = ({ data, rungeKuttaParams, rungeKuttaResults }) => {
             {columns.map((col, idx) => (
               <th
                 key={col.key}
-                className={`px-4 py-2 text-xs font-semibold  text-zinc-200 uppercase tracking-wider
-                    ${[0, 1, 2].includes(idx) ? `sticky top-1 z-20 bg-zinc-700 ${idx === 0 ? 'left-1' : idx === 1 ? 'left-[90px]' : 'left-[155px] '}` : ''
+                className={`px-4 py-2 text-xs max-w-[110px] font-semibold  text-zinc-200 uppercase tracking-wider
+                    ${[0, 1, 2].includes(idx) ? `sticky top-1 z-20 bg-zinc-700 ${idx === 0 ? 'left-1' : idx === 1 ? 'left-[90px]' : 'left-[235px] '}` : ''
                   }`}
               >
                 {col.label}
@@ -100,10 +106,14 @@ const Tabla = ({ data, rungeKuttaParams, rungeKuttaResults }) => {
                   <td
                     key={col.key}
                     className={`px-4 py-2 text-sm text-zinc-100 text-center
-                    ${[0, 1, 2].includes(idx) ? `sticky z-10 bg-inherit ${idx === 0 ? 'left-1' : idx === 1 ? 'left-[90px]' : 'left-[155px]'}`: index % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800'
-                    }`}
+                    ${[0, 1, 2].includes(idx) ? `sticky z-10 bg-inherit ${idx === 0 ? 'left-1' : idx === 1 ? 'left-[90px]' : 'left-[235px]'}` : index % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800'
+                      }`}
                   >
-                    {col.key === 'tiempo_descenso' ? (
+                    {col.key === 'numero' ? (
+                      <span className="font-bold">{index}</span>
+                    ) : col.key === 'evento' ? (
+                      <span>{item[col.key]} ({item.id_cliente})</span>
+                    ) : col.key === 'tiempo_descenso' ? (
                       item[col.key] ? (
                         <div className="flex items-center gap-5 justify-evenly">
                           <span>{item[col.key]}</span>

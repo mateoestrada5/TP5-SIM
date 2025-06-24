@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { IoMdSettings } from "react-icons/io";
 
-const RungeKuttaForm = ({xFinal, onChangeXFinal, onChangeRK, triggerNotification, setSimulationData}) => {
+const RungeKuttaForm = ({ xFinal, onChangeXFinal, onChangeRK, triggerNotification, setSimulationData }) => {
+    const [isDirty, setIsDirty] = useState(false);
     const [formData, setFormData] = useState({
         t0: 0,
         x0: 0,
@@ -18,6 +19,7 @@ const RungeKuttaForm = ({xFinal, onChangeXFinal, onChangeRK, triggerNotification
             ...prev,
             [name]: value
         }));
+        setIsDirty(true);
     };
 
     const handleSubmit = (e) => {
@@ -25,6 +27,7 @@ const RungeKuttaForm = ({xFinal, onChangeXFinal, onChangeRK, triggerNotification
         setSimulationData([])
         if (triggerNotification) triggerNotification();
         onChangeRK(formData);
+        setIsDirty(false);
     };
 
     return (
@@ -132,12 +135,17 @@ const RungeKuttaForm = ({xFinal, onChangeXFinal, onChangeRK, triggerNotification
                     />
                 </div>
             </div>
-            <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
-            >
-                Aplicar Cambios
-            </button>
+            <div>
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                >
+                    Aplicar Cambios
+                </button>
+                {isDirty && (
+                    <p className="mt-4 text-center text-yellow-300 ">Debe aplicar los cambios</p>
+                )}
+            </div>
         </form>
     );
 };
