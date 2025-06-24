@@ -324,16 +324,18 @@ def simular(semilla=None, hora_inicial=0, hora_fin=100, n_eventos_fin=10, hora_l
         "promedio_tiempo_espera": promedio_tiempo_espera,
         "contador_clientes_comienzan_descenso": contador_clientes_comienzan_descenso,
         "espera_cola_maxima": espera_cola_maxima,
-        "runge_kutta": runge_kutta_json["lineas"][:5] + runge_kutta_json["lineas"][-5:]  # Retornar solo las primeras y últimas 5 líneas del Runge-Kutta
+        "runge_kutta": runge_kutta_json  # Retornar solo las primeras y últimas 5 líneas del Runge-Kutta
     }
 
-    print(f"Salida json: "
-          f"{salida_json['eventos']}"
-          f"\ncola_maxima: {salida_json['cola_maxima']}"
-          f"\npromedio_tiempo_espera: {salida_json['promedio_tiempo_espera']}"
-          f"\ncontador_clientes_comienzan_descenso: {salida_json['contador_clientes_comienzan_descenso']}"
-          f"\nespera_cola_maxima en las primeras: {salida_json['espera_cola_maxima']}"
-          f"\nrunge_kutta: {salida_json['runge_kutta']}")
+    print(salida_json)
+
+    # print(f"Salida json: "
+    #       f"{salida_json['eventos']}"
+    #       f"\ncola_maxima: {salida_json['cola_maxima']}"
+    #       f"\npromedio_tiempo_espera: {salida_json['promedio_tiempo_espera']}"
+    #       f"\ncontador_clientes_comienzan_descenso: {salida_json['contador_clientes_comienzan_descenso']}"
+    #       f"\nespera_cola_maxima en las primeras: {salida_json['espera_cola_maxima']}"
+    #       f"\nrunge_kutta: {salida_json['runge_kutta']}")
 
 
 
