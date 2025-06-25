@@ -14,10 +14,10 @@ const RungeKuttaForm = ({ xFinal, onChangeXFinal, onChangeRK, triggerNotificatio
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: type === "number" ? Number(value) : value,
         }));
         setIsDirty(true);
     };

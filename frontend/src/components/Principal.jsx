@@ -23,7 +23,7 @@ const Principal = () => {
         frecuenciaLlegadaMin: 3.0,
         frecuenciaLlegadaMax: 4.5,
         periodoSuspension: 40,
-        periodoLimpieza: 4,
+        periodoLimpieza: 240,
         duracionLimpieza: 20,
         colaEsperaMaximaHoras: 10,
         cantidadEventosVisualizar: 300,
@@ -53,26 +53,53 @@ const Principal = () => {
     const [showNotification, setShowNotification] = useState(false);
     const [notificationClass, setNotificationClass] = useState('');
 
-    const API_URL = "http://localhost:8000";
 
     const handleRunSimulation = () => {
 
-        if (simulationData.length > 0) {
+        if (simulationData?.length > 0) {
             console.log("Ya se ha ejecutado una simulación. Por favor, reinicie la página para ejecutar una nueva.");
             return;
         }
-
-        // MODIFICAR PARA QUE SEA UN POST ENVIANDO LOS PARAMETROS NECESARIOS
-        axios.get('http://localhost:8000/simulacion')
+        
+        axios
+            .post("http://localhost:8000/simular", {
+                config: configParams,
+                rungeKutta: rungeKuttaParamsWithXFinal
+            })
             .then(response => {
                 const data = response.data;
-
-                const { runge_kutta, ...simulacion } = data;
-
-                console.log('Datos de la simulación:', simulacion);
-                setSimulationData(simulacion);
+                console.log('Datos:', data);
                 
+                const {
+                    runge_kutta,
+                    cola_maxima,
+                    promedio_tiempo_espera,
+                    contador_clientes_comienzan_descenso,
+                    espera_cola_maxima,
+                    eventos,
+                    acumulador_tiempos_espera
+                } = data;
+
+                const resultados = {
+                    cola_maxima,
+                    promedio_tiempo_espera,
+                    contador_clientes_comienzan_descenso,
+                    espera_cola_maxima,
+                    acumulador_tiempos_espera
+                };
+
+                const simulacion = {
+                    eventos,
+                };
+
+                
+                setSimulationData(simulacion);
+
+                // console.log(runge_kutta)
                 setRungeKuttaResults(runge_kutta);
+                // console.log(rungeKuttaResults)
+
+                setResults(resultados);
             })
             .catch(error => {
                 console.error('Error al obtener los datos:', error);

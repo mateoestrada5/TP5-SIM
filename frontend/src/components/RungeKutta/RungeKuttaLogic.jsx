@@ -143,9 +143,9 @@ const RungeKuttaLogic = ({ rungeKuttaParams, rungeKuttaResults }) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {rungeKuttaResults.map((fila, index) => (
+                                        {rungeKuttaResults.lineas.map((fila, index) => (
                                             <tr key={index} className="border-t border-zinc-700">
-                                                <td className="px-3 py-1">{fila.numero}</td>
+                                                <td className="px-3 py-1">{fila.n}</td>
                                                 <td className="px-3 py-1">{formatNumber(fila.t, 6)}</td>
                                                 <td className="px-3 py-1">{formatNumber(fila.x, 6)}</td>
                                                 <td className="px-3 py-1">{fila.x_sig ? formatNumber(fila.k1, 6) : ""}</td>

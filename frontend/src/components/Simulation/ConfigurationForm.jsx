@@ -13,7 +13,7 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
         frecuenciaLlegadaMin: 3.0,
         frecuenciaLlegadaMax: 4.5,
         periodoSuspension: 40,
-        periodoLimpieza: 4,
+        periodoLimpieza: 240,
         duracionLimpieza: 20,
         longitudAlfombra: longitudAlfombra,
         colaEsperaMaximaHoras: 10,
@@ -59,9 +59,8 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
                     <input
                         type="number"
                         name="semilla"
-                        value={formData.semilla}
+                        value={formData.semilla || ''}
                         onChange={handleChange}
-                        min={0}
                         className="w-40 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
                         placeholder="Ej: 1"
                     />
@@ -102,7 +101,8 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
                                 name="cantidadEventos"
                                 value={formData.cantidadEventos}
                                 onChange={handleChange}
-                                min={1}
+                                min={0}
+                                max={4000000}
                                 required
                                 className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
                                 placeholder="Ej: 1000"
@@ -152,7 +152,7 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
                     </label>
                     <input
                         type="number"
-                        name="periodoSuspension"
+                        name="horaInicio"
                         value={formData.horaInicio}
                         onChange={handleChange}
                         required
@@ -183,7 +183,7 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
                         <span className="text-zinc-100">-</span>
                         <input
                             type="number"
-                            step="0.01"
+                            step="0.1"
                             name="frecuenciaLlegadaMax"
                             value={formData.frecuenciaLlegadaMax}
                             onChange={handleChange}
@@ -214,8 +214,8 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
                 {/* Campo 4 */}
                 <div className="flex items-center justify-around gap-5">
                     <label className="w-2/5 mb-0 font-medium text-zinc-100">
-                        Periodo de limpieza (horas)
-                        <span className="text-zinc-400 block text-xs">(por defecto 4 horas)</span>
+                        Periodo de limpieza (minutos)
+                        <span className="text-zinc-400 block text-xs">(por defecto 240 minutos)</span>
                     </label>
                     <input
                         type="number"
@@ -225,7 +225,7 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
                         min={1}
                         required
                         className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
-                        placeholder="Ej: 4"
+                        placeholder="Ej: 240"
                     />
                 </div>
                 {/* Campo 5 */}
@@ -268,16 +268,20 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
                         Cola máxima al cabo de "Horas"
                         <span className="text-zinc-400 block text-xs">(por defecto 10 horas)</span>
                     </label>
-                    <input
-                        type="number"
-                        name="colaEsperaMaximaHoras"
-                        value={formData.colaEsperaMaximaHoras}
-                        onChange={handleChange}
-                        min={1}
-                        required
-                        className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
-                        placeholder="Ej: 10"
-                    />
+                    <div className="flex flex-col gap-2 items-center justify-center">
+                        <input
+                            type="number"
+                            name="colaEsperaMaximaHoras"
+                            value={formData.colaEsperaMaximaHoras}
+                            onChange={handleChange}
+                            min={1}
+                            required
+                            className="w-24 bg-zinc-800 text-zinc-100 border border-zinc-600 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-400"
+                            placeholder="Ej: 10"
+                        />
+                        <span className="text-zinc-400 text-xs">{formData.colaEsperaMaximaHoras * 60} minutos</span>
+                    </div>
+
                 </div>
                 {/* Campo 8 */}
                 <div className="flex items-center justify-around gap-5">

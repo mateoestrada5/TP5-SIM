@@ -5,7 +5,7 @@ const useBackendStatus = () => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/status')
+    fetch('http://localhost:8000/status')
       .then(res => {
         if (!res.ok) throw new Error('El backend respondió con error')
         return res.json()
