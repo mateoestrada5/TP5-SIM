@@ -7,14 +7,82 @@
 #                 lista.insert(i, elemento)
 #                 break
 
-def insertar_ordenado(eventos, evento):
+
+
+
+
+# def insertar_ordenado(eventos, evento):
+#     if not eventos or evento.reloj >= eventos[-1].reloj:
+#         eventos.append(evento)
+#     else:
+#         for i in range(len(eventos)):
+#             if evento.reloj < eventos[i].reloj:
+#                 eventos.insert(i, evento)
+#                 break
+
+# def insertar_ordenado(eventos, evento, pos_actual=0):
+#     if not eventos or evento.reloj >= eventos[-1].reloj:
+#         eventos.append(evento)
+#     else:
+#         for i in range(pos_actual, len(eventos)):
+#             if evento.reloj < eventos[i].reloj:
+#                 eventos.insert(i, evento)
+#                 break
+
+# def insertar_ordenado(eventos, evento, pos_actual=0):
+#     if not eventos or evento.reloj >= eventos[-1].reloj:
+#         eventos.append(evento)
+#         return
+#
+#     izquierda = pos_actual
+#     derecha = len(eventos) - 1
+#
+#     while izquierda <= derecha:
+#         medio = (izquierda + derecha) // 2
+#         if evento.reloj < eventos[medio].reloj:
+#             derecha = medio - 1
+#         else:
+#             izquierda = medio + 1
+#
+#     eventos.insert(izquierda, evento)
+
+
+def insertar_ordenado(eventos, evento, pos_actual=0):
     if not eventos or evento.reloj >= eventos[-1].reloj:
         eventos.append(evento)
-    else:
-        for i in range(len(eventos)):
-            if evento.reloj < eventos[i].reloj:
-                eventos.insert(i, evento)
-                break
+        return
+
+    izquierda = pos_actual
+    derecha = len(eventos) - 1
+
+    while izquierda <= derecha:
+        medio = (izquierda + derecha) // 2
+        if evento.reloj < eventos[medio].reloj:
+            derecha = medio - 1
+        else:
+            izquierda = medio + 1
+
+    eventos.insert(izquierda, evento)
+
+
+# def insertar_ordenado(eventos, evento):
+#     if not eventos or evento.reloj >= eventos[-1].reloj:
+#         eventos.append(evento)
+#         return
+#
+#     izquierda = 0
+#     derecha = len(eventos) - 1
+#
+#     while izquierda <= derecha:
+#         medio = (izquierda + derecha) // 2
+#         if evento.reloj < eventos[medio].reloj:
+#             derecha = medio - 1
+#         else:
+#             izquierda = medio + 1
+#
+#     eventos.insert(izquierda, evento)
+
+
 
 def buscar_cliente_por_id(clientes, id_cliente):
     for cliente in clientes:
@@ -50,10 +118,3 @@ def paginar_simulacion(vectores_estado, linea_inicial, cantidad_lineas):
     #     print(e)
 
     return vector_final
-
-
-
-
-
-
-
