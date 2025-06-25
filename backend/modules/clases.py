@@ -2,7 +2,8 @@
 
 
 class Vector_estado():
-    def __init__(self, evento, reloj, id_cliente="", rnd_ll="", tiempo_ll="", hora_ll="", tiempo_descenso="", hora_fin_descenso="", id_cliente_descenso="", prox_suspension="", prox_limpieza="", fin_limpieza="", e_alfombra="", cola="", acumulador_tiempo_espera=0, clientes_comienzan_atencion=0, cola_maxima_actual=0, espera_maxima_cola=0, clientes=[]):
+    def __init__(self, n_evento, evento, reloj, id_cliente="", rnd_ll="", tiempo_ll="", hora_ll="", tiempo_descenso="", hora_fin_descenso="", id_cliente_descenso="", prox_suspension="", prox_limpieza="", fin_limpieza="", e_alfombra="", cola="", acumulador_tiempo_espera=0, clientes_comienzan_atencion=0, cola_maxima_actual=0, espera_maxima_cola=0, clientes=[]):
+        self.n_evento = n_evento
         self.rnd = 0
         self.evento = evento  # Evento actual
         self.reloj = reloj  # Reloj de la simulación
@@ -24,18 +25,23 @@ class Vector_estado():
         self.espera_maxima_cola = espera_maxima_cola
         self.clientes = clientes  # Lista de clientes (objetos Cliente)
 
-    # def clientes_to_dict(self):
-    #     cat = ''
-    #     for cliente in self.clientes:
-    #         cat += f"{cliente.id_cliente} ({cliente.estado.nombre}) "
-    #     return cat
     def clientes_to_dict(self):
-        return [cliente.__dict__() for cliente in self.clientes]
+        cat = ''
+        for cliente in self.clientes:
+            cat += f"{cliente.id_cliente} ({cliente.estado.nombre}) "
+        return cat
+    # def clientes_to_dict(self):
+    #     return [cliente.__dict__() for cliente in self.clientes]
+
+
+
+
 
 
 
     def to_json(self):
         return {
+            "n_evento": self.n_evento,
             "evento": self.evento,
             "id_cliente": self.id_cliente,
             "reloj": self.reloj,
@@ -93,9 +99,10 @@ class Cliente():
         }
 
 class Alfombra():
-    def __init__(self, estado):
+    def __init__(self, estado, cliente_descendiendo=None):
         self.estado = estado
         self.cola = []
+        self.cliente_descendiendo = cliente_descendiendo  # Cliente que está descendiendo actualmente (si aplica)
 
 class Evento():
     def __init__(self, tipo, reloj, cliente=""): #(..., cliente=None):
