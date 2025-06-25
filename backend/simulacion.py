@@ -1,3 +1,5 @@
+import time
+
 from pandas.core.interchange.from_dataframe import primitive_column_to_ndarray
 
 from modules.runge_kutta import runge_kutta
@@ -27,14 +29,14 @@ def seguir_simulando(reloj, e, id_ultimo_cliente_descendido, id_cliente_fin_simu
 # def simular(semilla='', hora_inicial=0, hora_limite_espera_maxima=100, hora_limite_cola_maxima=10, hora_fin=10, n_eventos_fin='', id_cliente_fin_simulacion=''):
 def simular(parametros):
 
+    # Parametros de la simulación
     p_simulacion = parametros['config']
-    p_runge_kutta = parametros['rungeKutta']
 
     semilla = p_simulacion['semilla']
     hora_fin = p_simulacion['tiempoLimite']
     id_cliente_fin_simulacion = p_simulacion['clienteX']
     n_eventos_fin = p_simulacion['cantidadEventos']
-    # hora_inicial = p_simulacion['hora_inicial']
+    hora_inicial = p_simulacion['hora_inicial']
     lim_inferior = p_simulacion['frecuenciaLlegadaMin']
     lim_superior = p_simulacion['frecuenciaLlegadaMax']
     periodo_suspension = p_simulacion['periodoSuspension']
@@ -42,20 +44,32 @@ def simular(parametros):
     duracion_limpieza = p_simulacion['duracionLimpieza']
     hora_limite_cola_espera_maxima = p_simulacion['colaEsperaMaximaHoras'] # falta
 
-
     desde_evento = p_simulacion['desdeEvento']
     cantidad_eventos_visualizar = p_simulacion['cantidadEventosVisualizar']
 
+    # Parametros del Runge-Kutta
+    p_runge_kutta = parametros['rungeKutta']
+
+    t0 = p_runge_kutta['t0']  # Tiempo inicial
+    x0 = p_runge_kutta['x0']
+    h = p_runge_kutta['h']
+    ec_a = p_runge_kutta['ecuacionA'] # Coeficiente A de la ecuacion diferencial
+    ec_b = p_runge_kutta['ecuacionB'] # Coeficiente B de la ecuacion diferencial
+    ec_c = p_runge_kutta['ecuacionC'] # Coeficiente C de la ecuacion diferencial (término independiente)
+    xf = p_runge_kutta['xFinal'] # Largo de la alfombra
 
 
 
 
+    tiempo_ejecucion_total = 0
+
+
+    acumulador_tiempos_ejecucion = [0,0,0,0,0,0,0]
 
 
 
 
-
-    reloj = 0; cola = []
+    reloj = hora_inicial; cola = []
 
     cola = [] # -> clientes en cola
     clientes = [] # -> clientes del sistema
@@ -86,7 +100,7 @@ def simular(parametros):
     e_libre = Estado("L"); e_ocupado = Estado("O"); e_en_limpieza = Estado("EL"); e_en_suspension = Estado("ES")
 
 
-    tiempo_descenso_rk, distancia, runge_kutta_json = runge_kutta(ec_a=0.03)
+    tiempo_descenso_rk, distancia, runge_kutta_json = runge_kutta(t0=t0, x0=x0, h=h, ec_a=ec_a, ec_b=ec_b, ec_c=ec_c, xf=xf)  # Ejecutar Runge-Kutta para obtener el tiempo de descenso y distancia recorrida
 
     eventos = [] # Lista de eventos a procesar, pueden ser llegada_cliente(1), fin_descenso(2), fin_limpieza(3), fin_suspension(4)
 
@@ -100,6 +114,11 @@ def simular(parametros):
     cola_maxima_actual = 0
     contador_clientes_comienzan_descenso = 0
     acumulador_tiempos_espera = 0  # Acumulador de tiempos de espera de los clientes atendidos
+
+    contador_clientes_que_llegaron = 0
+
+
+
 
 
 
@@ -118,6 +137,10 @@ def simular(parametros):
 
         # servicios --
         fin_limpieza = ''
+
+        t_inicial_log = time.time()  # Iniciar el cronómetro para medir el tiempo de ejecución del evento actual
+
+
 
 
 
@@ -146,6 +169,8 @@ def simular(parametros):
 
             id_ultimo_cliente += 1  # Actualizar el ID del último cliente procesado
 
+
+
         #todo=================================================================================================================================================
         elif eventos[e].tipo == 1:  # Llegada de cliente solo si la bandera de suspendida es False
             if en_suspension or en_limpieza:
@@ -157,6 +182,7 @@ def simular(parametros):
             id_ultimo_cliente = eventos[e].cliente  # ID del último cliente procesado
             cliente_que_llego = Cliente(eventos[e].cliente, e_creado, eventos[e].reloj)  # Crear cliente con el ID del evento y el reloj actual
 
+            contador_clientes_que_llegaron += 1
             rnd_ll = round(r.random(), 4)
 
             tiempo_ll_prox_cliente = llegada_cliente(rnd_ll, lim_inferior, lim_superior)
@@ -196,17 +222,14 @@ def simular(parametros):
             id_cliente_atendido = cliente_que_llego.id_cliente
             id_ultimo_cliente += 1  # Actualizar el ID del último cliente procesado
 
+
         #todo=================================================================================================================================================
         elif eventos[e].tipo == 2: # Fin de descenso
-
-            # cliente_atendido = buscar_cliente_por_id(clientes, eventos[e].cliente)
             cliente_atendido = alfombra.cliente_descendiendo
             id_cliente_atendido = cliente_atendido.id_cliente
 
             clientes_en_sistema.remove(cliente_atendido)  # Eliminar cliente del sistema
-
-            # print(f"Cliente atendido: {cliente_atendido.to_string()}")
-            # id_ultimo_cliente_descendido = id_cliente_atendido
+            id_ultimo_cliente_descendido = id_cliente_atendido
 
 
             # if cola:
@@ -217,6 +240,7 @@ def simular(parametros):
                 fin_descenso = round(eventos[e].reloj + tiempo_descenso_rk, 4)
                 id_fin_descenso = cliente_a_ser_atendido.id_cliente  # ID del cliente que está siendo atendido
                 contador_clientes_comienzan_descenso += 1
+
 
                 alfombra.cliente_descendiendo = cliente_a_ser_atendido  # Actualizar el cliente que está siendo atendido
 
@@ -250,6 +274,8 @@ def simular(parametros):
 
         #todo=================================================================================================================================================
         elif eventos[e].tipo == 3: # Inicio de suspensión
+
+
             ult_inicio_suspension = prox_suspension  # Actualizar el último inicio de suspensión
 
             if alfombra.estado.es_libre():
@@ -287,9 +313,6 @@ def simular(parametros):
 
         #todo=================================================================================================================================================
         elif eventos[e].tipo == 5:
-
-
-
             if en_suspension:
                 en_suspension = False  # Desactivar la bandera de suspensión
                 prox_suspension = ult_inicio_suspension + periodo_suspension  # Proxima suspensión después de la limpieza
@@ -327,6 +350,8 @@ def simular(parametros):
             alfombra.estado = e_libre
 
 
+
+
         #todo=================================================================================================================================================
 
         vector_estado = Vector_estado(
@@ -337,32 +362,38 @@ def simular(parametros):
         )
         n_evento += 1
 
-        matriz_vectores_estado.append(vector_estado)  # Agregar el vector de estado a la lista de vectores de estado
+        matriz_vectores_estado.append(vector_estado.to_json())  # Agregar el vector de estado a la lista de vectores de estado
 
-        # ve = vector_estado.to_json()
-        # eventos_json.append(ve)
+        ve = vector_estado.to_json()
+        eventos_json.append(ve)
+
+        acumulador_tiempos_ejecucion[eventos[e].tipo] += time.time() - t_inicial_log  # Acumular tiempo de ejecución del evento de inicialización
 
         e += 1
 
     promedio_tiempo_espera = round(acumulador_tiempos_espera / contador_clientes_comienzan_descenso, 4) if contador_clientes_comienzan_descenso > 0 else 0
 
-    # pd.set_option('display.max_rows', None)      # Mostrar todas las filas
-    # pd.set_option('display.max_columns', None)   # Mostrar todas las columnas
-    # pd.set_option('display.width', None)         # No limitar el ancho del display
-    # pd.set_option('display.max_colwidth', None)  # Mostrar contenido completo de las celdas
-    # salida = pd.DataFrame(eventos_json)
+    pd.set_option('display.max_rows', None)      # Mostrar todas las filas
+    pd.set_option('display.max_columns', None)   # Mostrar todas las columnas
+    pd.set_option('display.width', None)         # No limitar el ancho del display
+    pd.set_option('display.max_colwidth', None)  # Mostrar contenido completo de las celdas
+    salida = pd.DataFrame(eventos_json)
     # print(tabulate(salida, headers='keys', tablefmt='github', stralign='right', numalign='right'))
+
+
+    # print("Tiempo de ejecución:", time.time() - log_tiempo_inicio, "segundos")
+    for t in range(len(acumulador_tiempos_ejecucion)):
+        print(f"Tiempo de ejecución del evento {t}: {acumulador_tiempos_ejecucion[t]:.4f} segundos")
 
 
 
     eventos_json = paginar_simulacion(matriz_vectores_estado, desde_evento, cantidad_eventos_visualizar)  # Paginación de eventos para visualización
-
-
-
+    # print(f"Cantidad de eventos procesados: {len(eventos_json)}")
 
 
     salida_json = {
         "eventos": eventos_json,
+        "contador_clientes_que_llegaron": contador_clientes_que_llegaron,
         "cola_maxima": cola_maxima,
         "acumulador_tiempos_espera": acumulador_tiempos_espera,
         "contador_clientes_comienzan_descenso": contador_clientes_comienzan_descenso,
@@ -371,27 +402,39 @@ def simular(parametros):
         "runge_kutta": runge_kutta_json  # Retornar solo las primeras y últimas 5 líneas del Runge-Kutta
     }
 
+    # print(f'{salida_json["eventos"]}\n'
+    #       f'contador_clientes_que_llegaron: {salida_json["contador_clientes_que_llegaron"]}\n'
+    #       f'cola_maxima: {salida_json["cola_maxima"]}\n'
+    #       f'acumulador_tiempos_espera: {salida_json["acumulador_tiempos_espera"]}\n'
+    #       f'contador_clientes_comienzan_descenso: {salida_json["contador_clientes_comienzan_descenso"]}\n'
+    #       f'promedio_tiempo_espera: {salida_json["promedio_tiempo_espera"]}\n'
+    #       f'espera_cola_maxima: {salida_json["espera_cola_maxima"]}\n'
+    #       f'runge_kutta: {salida_json["runge_kutta"]}\n'
+    #       )
+
+
+
     return salida_json  # Retornar los eventos procesados en formato JSON
 
 
 parametros_guia = {
     "config": {
-        "semilla": "",
+        "semilla": 10,
         "tiempoLimite": "",
         "clienteX": "",
-        "cantidadEventos": 100,
+        "cantidadEventos": 100000,
         "frecuenciaLlegadaMin": 3,
-        "frecuenciaLlegadaMax": 4.5,
+        "frecuenciaLlegadaMax": 10.5,
         "periodoSuspension": 20,
         "periodoLimpieza": 25,
         "duracionLimpieza": 20,
         "colaEsperaMaximaHoras": 10,
-        "desdeEvento": 0,
-        "cantidadEventosVisualizar": 300,
+        "desdeEvento": 200,
+        "cantidadEventosVisualizar": 50,
         "hora_inicial": 0
     },
     "rungeKutta": {
-        "t0": 0,
+        "t0": 9,
         "x0": 0,
         "h": 0.001,
         "ecuacionA": 0.5,

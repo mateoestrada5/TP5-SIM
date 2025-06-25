@@ -34,14 +34,23 @@ def paginar_simulacion(vectores_estado, linea_inicial, cantidad_lineas):
     # devuelve los primeros 2, los solicitados, y los ultimos 2
 
     vector_final = []
+    if linea_inicial < 2:
+        linea_inicial = 2
+
     if linea_inicial + cantidad_lineas >= len(vectores_estado) - 2:
         cantidad_lineas -= (linea_inicial + cantidad_lineas) - (len(vectores_estado) - 2)
 
-    if linea_inicial > 2:
+    if linea_inicial >= len(vectores_estado) - 2:
+        vector_final = vectores_estado[:2] + vectores_estado[-50:]
+
+    else:
         vector_final = vectores_estado[:2] + vectores_estado[linea_inicial:linea_inicial + cantidad_lineas] + vectores_estado[-2:]
 
-    for e in vector_final:
-        print(e.to_json())
+    # for e in vector_final:
+    #     print(e)
+
+    return vector_final
+
 
 
 
