@@ -24,7 +24,7 @@ const RungeKuttaForm = ({ xFinal, onChangeXFinal, onChangeRK, triggerNotificatio
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSimulationData([])
+        setSimulationData({})
         if (triggerNotification) triggerNotification();
         onChangeRK(formData);
         setIsDirty(false);

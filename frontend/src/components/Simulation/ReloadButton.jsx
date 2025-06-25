@@ -3,7 +3,7 @@ import { TbReload } from "react-icons/tb";
 
 const ReloadButton = ({setSimulationData}) => {
     const handleReload = () => {
-        setSimulationData([]);
+        setSimulationData({});
     };
 
     return (

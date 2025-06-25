@@ -4,10 +4,17 @@ import { FaEye } from "react-icons/fa";
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 
+export const formatNumber = (num, dec) => {
+        if (num === null || num === undefined || isNaN(num)) return '';
+        return Number(num).toFixed(dec);
+    };
+
 const RungeKuttaLogic = ({ rungeKuttaParams, rungeKuttaResults }) => {
     const [showModalRungeKuttaLogic, setShowModalRungeKuttaLogic] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const { t0, x0, h, ecuacionA, ecuacionB, ecuacionC, xFinal } = rungeKuttaParams;
+
+    
 
     // Fórmulas de Runge-Kutta de orden 4
     const rk4Latex = `
@@ -125,9 +132,9 @@ const RungeKuttaLogic = ({ rungeKuttaParams, rungeKuttaResults }) => {
                                     </colgroup>
                                     <thead>
                                         <tr>
+                                            <th className="border-b border-zinc-700 bg-zinc-800 px-3 py-1">Número</th>
                                             <th className="border-b border-zinc-700 bg-zinc-800 px-3 py-1">t<sub className='text-sm'>n</sub></th>
                                             <th className="border-b border-zinc-700 bg-zinc-800 px-3 py-1">x<sub className='text-sm'>n</sub></th>
-                                            <th className="border-b border-zinc-700 bg-zinc-800 px-3 py-1">t<sub className='text-sm'>n</sub> + 1/2*h</th>
                                             <th className="border-b border-zinc-700 bg-zinc-800 px-3 py-1">k<sub className='text-sm'>1</sub></th>
                                             <th className="border-b border-zinc-700 bg-zinc-800 px-3 py-1">k<sub className='text-sm'>2</sub></th>
                                             <th className="border-b border-zinc-700 bg-zinc-800 px-3 py-1">k<sub className='text-sm'>3</sub></th>
@@ -139,13 +146,13 @@ const RungeKuttaLogic = ({ rungeKuttaParams, rungeKuttaResults }) => {
                                         {rungeKuttaResults.map((fila, index) => (
                                             <tr key={index} className="border-t border-zinc-700">
                                                 <td className="px-3 py-1">{fila.numero}</td>
-                                                <td className="px-3 py-1">{fila.tn}</td>
-                                                <td className="px-3 py-1">{fila.xn}</td>
-                                                <td className="px-3 py-1">{fila.k1}</td>
-                                                <td className="px-3 py-1">{fila.k2}</td>
-                                                <td className="px-3 py-1">{fila.k3}</td>
-                                                <td className="px-3 py-1">{fila.k4}</td>
-                                                <td className="px-3 py-1">{fila.xn_1}</td>
+                                                <td className="px-3 py-1">{formatNumber(fila.t, 6)}</td>
+                                                <td className="px-3 py-1">{formatNumber(fila.x, 6)}</td>
+                                                <td className="px-3 py-1">{fila.x_sig ? formatNumber(fila.k1, 6) : ""}</td>
+                                                <td className="px-3 py-1">{fila.x_sig ? formatNumber(fila.k2, 6) : ""}</td>
+                                                <td className="px-3 py-1">{fila.x_sig ? formatNumber(fila.k3, 6) : ""}</td>
+                                                <td className="px-3 py-1">{fila.x_sig ? formatNumber(fila.k4, 6) : ""}</td>
+                                                <td className="px-3 py-1">{fila.x_sig ? formatNumber(fila.x_sig, 6) : ""}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -161,3 +168,4 @@ const RungeKuttaLogic = ({ rungeKuttaParams, rungeKuttaResults }) => {
 }
 
 export default RungeKuttaLogic;
+

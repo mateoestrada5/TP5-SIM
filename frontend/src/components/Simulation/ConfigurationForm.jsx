@@ -33,7 +33,7 @@ const ConfigurationForm = ({ longitudAlfombra, onChangeLongitudAlfombra, onChang
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSimulationData([])
+        setSimulationData({})
         if (triggerNotification) triggerNotification();
         const { condicionCorte, longitudAlfombra, ...formDataFiltered } = formData;
         onChangeConfig(formDataFiltered);
