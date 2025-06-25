@@ -36,7 +36,7 @@ def simular(parametros):
     hora_fin = p_simulacion['tiempoLimite']
     id_cliente_fin_simulacion = p_simulacion['clienteX']
     n_eventos_fin = p_simulacion['cantidadEventos']
-    hora_inicial = p_simulacion['hora_inicial']
+    hora_inicial = p_simulacion['horaInicio']
     lim_inferior = p_simulacion['frecuenciaLlegadaMin']
     lim_superior = p_simulacion['frecuenciaLlegadaMax']
     periodo_suspension = p_simulacion['periodoSuspension']
@@ -44,7 +44,7 @@ def simular(parametros):
     duracion_limpieza = p_simulacion['duracionLimpieza']
     hora_limite_cola_espera_maxima = p_simulacion['colaEsperaMaximaHoras'] # falta
 
-    desde_evento = p_simulacion['desdeEvento']
+    desde_evento = p_simulacion['eventoInicial']
     cantidad_eventos_visualizar = p_simulacion['cantidadEventosVisualizar']
 
     # Parametros del Runge-Kutta
@@ -191,16 +191,16 @@ def simular(parametros):
 
             contador_clientes_que_llegaron += 1
 
-            tt_random_actual = time.time()
+
             rnd_ll = round(r.random(), 4)
-            acumulador_tiempos_ejecucion[-1] += tt_random_actual - t_inicial_log  # Acumular tiempo de ejecución del evento de llegada de cliente
+              # Acumular tiempo de ejecución del evento de llegada de cliente
 
             tiempo_ll_prox_cliente = llegada_cliente(rnd_ll, lim_inferior, lim_superior)
             hora_ll = round(eventos[e].reloj + tiempo_ll_prox_cliente, 4)  # Hora de llegada del próximo cliente
             e_llegada_cliente_prox = Evento(1, hora_ll, cliente=(id_ultimo_cliente+1))  # Evento de llegada de cliente
             insertar_ordenado(eventos, e_llegada_cliente_prox, pos_actual=e)
 
-            clientes.append(cliente_que_llego)  # Agregar cliente a la lista de clientes del sistema
+            # clientes.append(cliente_que_llego)  # Agregar cliente a la lista de clientes del sistema
             clientes_en_sistema.append(cliente_que_llego)  # Agregar cliente a la lista de clientes en el sistema
 
             # si alfombra esta libre, ocuparla y definir fin_descenso -> cambiar estado del cliente a SA (siendo atendido)
@@ -239,7 +239,10 @@ def simular(parametros):
             cliente_atendido = alfombra.cliente_descendiendo
             id_cliente_atendido = cliente_atendido.id_cliente
 
+            tt_random_actual = time.time()
             clientes_en_sistema.remove(cliente_atendido)  # Eliminar cliente del sistema
+            acumulador_tiempos_ejecucion[-1] += tt_random_actual - t_inicial_log
+
             id_ultimo_cliente_descendido = id_cliente_atendido
 
 
@@ -430,32 +433,34 @@ def simular(parametros):
 
 
 
-# parametros_guia = {
-#     "config": {
-#         "semilla": 10,
-#         "tiempoLimite": "",
-#         "clienteX": "",
-#         "cantidadEventos": 10,
-#         "frecuenciaLlegadaMin": 3,
-#         "frecuenciaLlegadaMax": 10.5,
-#         "periodoSuspension": 20,
-#         "periodoLimpieza": 25,
-#         "duracionLimpieza": 20,
-#         "colaEsperaMaximaHoras": 10,
-#         "desdeEvento": 0,
-#         "cantidadEventosVisualizar": 50,
-#         "hora_inicial": 0
-#     },
-#     "rungeKutta": {
-#         "t0": 9,
-#         "x0": 0,
-#         "h": 0.001,
-#         "ecuacionA": 0.5,
-#         "ecuacionB": -0.2,
-#         "ecuacionC": 5,
-#         "xFinal": 120
-#     }
-# }
-#
-# simular(parametros_guia)
-#
+parametros_guia = {
+    "config": {
+        "semilla": 10,
+        "tiempoLimite": "",
+        "clienteX": "",
+        "cantidadEventos": 10000,
+        "frecuenciaLlegadaMin": 3,
+        "frecuenciaLlegadaMax": 10.5,
+        "periodoSuspension": 20,
+        "periodoLimpieza": 25,
+        "duracionLimpieza": 20,
+        "colaEsperaMaximaHoras": 10,
+        "eventoInicial": 0,
+        "cantidadEventosVisualizar": 50,
+        "horaInicio": 0
+    },
+    "rungeKutta": {
+        "t0": 9,
+        "x0": 0,
+        "h": 0.001,
+        "ecuacionA": 0.5,
+        "ecuacionB": -0.2,
+        "ecuacionC": 5,
+        "xFinal": 120
+    }
+}
+
+simular(parametros_guia)
+
+
+

@@ -20,14 +20,14 @@
 #                 eventos.insert(i, evento)
 #                 break
 
-# def insertar_ordenado(eventos, evento, pos_actual=0):
-#     if not eventos or evento.reloj >= eventos[-1].reloj:
-#         eventos.append(evento)
-#     else:
-#         for i in range(pos_actual, len(eventos)):
-#             if evento.reloj < eventos[i].reloj:
-#                 eventos.insert(i, evento)
-#                 break
+def insertar_ordenado(eventos, evento, pos_actual=0):
+    if not eventos or evento.reloj >= eventos[-1].reloj:
+        eventos.append(evento)
+    else:
+        for i in range(pos_actual, len(eventos)):
+            if evento.reloj < eventos[i].reloj:
+                eventos.insert(i, evento)
+                break
 
 # def insertar_ordenado(eventos, evento, pos_actual=0):
 #     if not eventos or evento.reloj >= eventos[-1].reloj:
@@ -47,22 +47,22 @@
 #     eventos.insert(izquierda, evento)
 
 
-def insertar_ordenado(eventos, evento, pos_actual=0):
-    if not eventos or evento.reloj >= eventos[-1].reloj:
-        eventos.append(evento)
-        return
-
-    izquierda = pos_actual
-    derecha = len(eventos) - 1
-
-    while izquierda <= derecha:
-        medio = (izquierda + derecha) // 2
-        if evento.reloj < eventos[medio].reloj:
-            derecha = medio - 1
-        else:
-            izquierda = medio + 1
-
-    eventos.insert(izquierda, evento)
+# def insertar_ordenado(eventos, evento, pos_actual=0):
+#     if not eventos or evento.reloj >= eventos[-1].reloj:
+#         eventos.append(evento)
+#         return
+#
+#     izquierda = pos_actual
+#     derecha = len(eventos) - 1
+#
+#     while izquierda <= derecha:
+#         medio = (izquierda + derecha) // 2
+#         if evento.reloj < eventos[medio].reloj:
+#             derecha = medio - 1
+#         else:
+#             izquierda = medio + 1
+#
+#     eventos.insert(izquierda, evento)
 
 
 # def insertar_ordenado(eventos, evento):
