@@ -9,6 +9,8 @@ import SimulationLogic from './Information/SimulationLogic';
 
 import { FaCheck } from "react-icons/fa6";
 import ReloadButton from './Simulation/ReloadButton';
+import { TbReload } from "react-icons/tb";
+
 import axios from 'axios';
 
 const Principal = () => {
@@ -47,11 +49,17 @@ const Principal = () => {
         setLongitudAlfombra(newLongitud);
     };
 
+    const isValidConfig = () => {
+        const { tiempoLimite, clienteX, cantidadEventos } = configParams;
+        return tiempoLimite !== "" || clienteX !== "" || cantidadEventos !== "";
+    };
+
     const [simulationData, setSimulationData] = useState({});
     const [rungeKuttaResults, setRungeKuttaResults] = useState({});
     const [results, setResults] = useState([]);
     const [showNotification, setShowNotification] = useState(false);
     const [notificationClass, setNotificationClass] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const handleRunSimulation = () => {
@@ -60,7 +68,9 @@ const Principal = () => {
             console.log("Ya se ha ejecutado una simulación. Por favor, reinicie la página para ejecutar una nueva.");
             return;
         }
-        
+
+        setIsLoading(true);
+
         axios
             .post("http://localhost:8000/simular", {
                 config: configParams,
@@ -69,7 +79,7 @@ const Principal = () => {
             .then(response => {
                 const data = response.data;
                 console.log('Datos:', data);
-                
+
                 const {
                     runge_kutta,
                     cola_maxima,
@@ -77,7 +87,8 @@ const Principal = () => {
                     contador_clientes_comienzan_descenso,
                     espera_cola_maxima,
                     eventos,
-                    acumulador_tiempos_espera
+                    acumulador_tiempos_espera,
+                    tiempo_simulacion,
                 } = data;
 
                 const resultados = {
@@ -85,14 +96,15 @@ const Principal = () => {
                     promedio_tiempo_espera,
                     contador_clientes_comienzan_descenso,
                     espera_cola_maxima,
-                    acumulador_tiempos_espera
+                    acumulador_tiempos_espera,
+                    tiempo_simulacion
                 };
 
                 const simulacion = {
                     eventos,
                 };
 
-                
+
                 setSimulationData(simulacion);
 
                 // console.log(runge_kutta)
@@ -103,7 +115,10 @@ const Principal = () => {
             })
             .catch(error => {
                 console.error('Error al obtener los datos:', error);
-            });
+            })
+            .finally(() => {
+                setIsLoading(false); // ✅ Terminó la carga
+            });;
     }
 
     const triggerNotification = () => {
@@ -153,13 +168,21 @@ const Principal = () => {
 
                 <div className="flex flex-row items-center justify-center">
                     <SimulationLogic />
-                    <button
-                        className={`m-4 px-12 py-3 ${(simulationData.length > 0) ? "bg-zinc-500" : "bg-blue-600 hover:bg-blue-700 cursor-pointer"} text-white text-xl rounded-xl transition `}
-                        onClick={handleRunSimulation}
-                        title='Ejecutar Simulación'
-                    >
-                        Ejecutar Simulación
-                    </button>
+
+                    {isLoading ? (
+                        <div className='bg-blue-600 hover:bg-blue-700 text-white text-xl rounded-xl m-4 px-31 py-4'>
+                            <TbReload className="animate-spin text-2xl" />
+                        </div>
+                    ) : (
+                        <button
+                            className={`m-4 px-12 py-3 ${(!isValidConfig()) ? "bg-zinc-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 cursor-pointer"} text-white text-xl rounded-xl transition `}
+                            onClick={handleRunSimulation}
+                            title='Ejecutar Simulación'
+                            disabled={!isValidConfig()}
+                        >
+                            Ejecutar Simulación
+                        </button>
+                    )}
                     <ReloadButton setSimulationData={setSimulationData} />
                 </div>
             </section>
@@ -172,7 +195,7 @@ const Principal = () => {
                     rungeKuttaResults={rungeKuttaResults} />
             </section>
 
-            {/* resultados */}
+
             <section id="results" className='text-white'>
                 <ResultInterpretation results={results} />
             </section>

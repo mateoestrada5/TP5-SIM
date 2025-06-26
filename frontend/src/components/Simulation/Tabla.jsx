@@ -65,77 +65,8 @@ const groupedColumns = [
 const getAllColumns = () => groupedColumns.flatMap(group => group.columns);
 const getGroupColSpans = () => groupedColumns.map(group => group.columns.length);
 
-// FALTA EL MANEJO DINAMICO DE LOS CLIENTES, EN TEORIA VOY A TENER LA CANTIDAD MAXIMA DE CLIENTES PARA PODER  CREAR LAS COLUMNAS NECESARIAS
-// FALTA DEFINIR SI LAS METRICAS GENERALES SON COLUMNAS O SOLO ALGO QUE APARECERA EN RESULTADOS FINALES
-// LA ULTIMA FILA DEBO DEFINIR COMO QUEDA Y/O QUE ME LA RETORNE EL BACK DISTINGUIDA PARA MOSTRARLA EN UNA FILA SEPARADA
-// 
-
 
 const Tabla = ({ data, rungeKuttaParams, rungeKuttaResults }) => {
-
-  // {
-  //       "eventos": [
-  //           {
-  //               "numero": 1,
-  //               "evento": "Inicialización",
-  //               "id_cliente": "",
-  //               "reloj": "0.00",
-  //               "rnd_ll": 0.1838,
-  //               "tiempo_ll": 3.1838,
-  //               "hora_ll": 3.1838,
-  //               "tiempo_descenso": "",
-  //               "hora_fin_descenso": "",
-  //               "id_cliente_descenso": "",
-  //               "prox_suspension": 30,
-  //               "prox_limpieza": 50,
-  //               "fin_limpieza": "",
-  //               "estado_alfombra": "L",
-  //               "cola": 0,
-  //               "acumulador_tiempo_espera": 0,
-  //               "clientes_comienzan_atencion": 0,
-  //               "cola_maxima_actual": 0,
-  //               "espera_maxima_cola": 0,
-  //               "clientes": []
-  //           },
-  //           {
-  //               "numero": 2,
-  //               "evento": "Llegada Cliente",
-  //               "id_cliente": 2,
-  //               "reloj": "6.62",
-  //               "rnd_ll": 0.9072,
-  //               "tiempo_ll": 3.9072,
-  //               "hora_ll": 10.5281,
-  //               "tiempo_descenso": "",
-  //               "hora_fin_descenso": 7.7958,
-  //               "id_cliente_descenso": 1,
-  //               "prox_suspension": 30,
-  //               "prox_limpieza": 50,
-  //               "fin_limpieza": "",
-  //               "estado_alfombra": "O",
-  //               "cola": 1,
-  //               "acumulador_tiempo_espera": 0,
-  //               "clientes_comienzan_atencion": 1,
-  //               "cola_maxima_actual": 1,
-  //               "espera_maxima_cola": 0,
-  //               "clientes": [
-  //                   {
-  //                       "id_cliente": 1,
-  //                       "estado": "SA",
-  //                       "hora_llegada": 3.1838
-  //                   },
-  //                   {
-  //                       "id_cliente": 2,
-  //                       "estado": "EA",
-  //                       "hora_llegada": 6.6209
-  //                   }
-  //               ]
-  //           }
-  //       ],
-  //       "cola_maxima": 2,
-  //       "promedio_tiempo_espera": 2.7421,
-  //       "contador_clientes_comienzan_descenso": 17,
-  //       "espera_cola_maxima": 6.7213,
-  //  }
 
   const columns = getAllColumns();
   const groupColSpans = getGroupColSpans();
@@ -185,7 +116,7 @@ const Tabla = ({ data, rungeKuttaParams, rungeKuttaResults }) => {
                     key={col.key}
                     className={`px-4 py-2 text-sm text-zinc-100 text-center
                     ${[0, 1, 2].includes(idx)
-                        ? `sticky z-10 bg-inherit ${idx === 0 ? 'left-1' : idx === 1 ? 'left-[90px]' : 'left-[242px]'}`
+                        ? `sticky z-10 bg-inherit ${idx === 0 ? 'left-1' : idx === 1 ? 'left-[90px]' : 'left-[236px]'}`
                         : index % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800'
                       }`}
                   >
@@ -205,6 +136,7 @@ const Tabla = ({ data, rungeKuttaParams, rungeKuttaResults }) => {
                             EL: "bg-blue-600/90 text-white",
                           }[item[col.key]] || "bg-zinc-700 text-white"
                           }`}
+                        title={item.estado_alfombra === "L" ? "Libre" : item.estado_alfombra === "O" ? "Ocupado" : item.estado_alfombra === "ES" ? "En Suspensión" : "En Limpieza"}
                       >
                         {item[col.key]}
                       </span>

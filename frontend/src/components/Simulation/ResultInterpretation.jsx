@@ -8,6 +8,7 @@ const ResultInterpretation = ({ results }) => {
         promedio_tiempo_espera,
         contador_clientes_comienzan_descenso,
         espera_cola_maxima,
+        tiempo_simulacion
     } = results;
 
     const data = [
@@ -31,6 +32,11 @@ const ResultInterpretation = ({ results }) => {
             value: espera_cola_maxima,
             description: 'Mayor tiempo de espera registrado (minutos)',
         },
+        {
+            label: 'Tiempo de Simulacion',
+            value: tiempo_simulacion,
+            description: 'El tiempo que demoro en realizarse la simulación'
+        }
     ];
 
     return (
