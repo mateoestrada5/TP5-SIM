@@ -31,7 +31,7 @@ const SimulationLogic = () => {
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
                     style={{ backdropFilter: 'blur(3px)' }}
                 >
-                    <div className="bg-zinc-900 rounded-xl shadow-[0_0_40px_5px_white] shadow-white/10 p-8 max-w-2xl w-full relative">
+                    <div className="bg-zinc-900 rounded-xl shadow-[0_0_40px_5px_white] shadow-white/10 p-8 max-w-2xl max-h-[90%] w-full relative overflow-auto">
                         <button
                             className="absolute top-2 right-2 text-zinc-500 hover:text-white text-2xl cursor-pointer"
                             onClick={() => setShowModalSimulationLogic(false)}
