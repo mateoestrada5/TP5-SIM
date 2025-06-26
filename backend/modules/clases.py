@@ -25,14 +25,8 @@ class Vector_estado():
         self.espera_maxima_cola = espera_maxima_cola
         self.clientes = clientes  # Lista de clientes (objetos Cliente)
 
-    # def clientes_to_dict(self):
-    #     cat = ''
-    #     for cliente in self.clientes:
-    #         cat += f"{cliente.id_cliente} ({cliente.estado.nombre}) "
-    #     return cat
-
     def clientes_to_dict(self):
-        return [cliente.__dict__() for cliente in self.clientes]
+        return [cliente.to_json() for cliente in self.clientes]
 
 
     def to_json(self):
@@ -87,7 +81,7 @@ class Cliente():
     def to_string(self):
         return f"Cliente(id={self.id_cliente}, estado={self.estado.nombre}, hora_llegada={self.hora_llegada})"
 
-    def __dict__(self):
+    def to_json(self):
         return {
             "id_cliente": self.id_cliente,
             "estado": self.estado.nombre,

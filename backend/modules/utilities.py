@@ -1,16 +1,3 @@
-# def insertar_ordenado(lista, key, elemento):
-#     if not lista or key >= lista[-1]:
-#         lista.append(key)
-#     else:
-#         for i in range(len(lista)):
-#             if key < lista[i].reloj:
-#                 lista.insert(i, elemento)
-#                 break
-
-
-
-
-
 # def insertar_ordenado(eventos, evento):
 #     if not eventos or evento.reloj >= eventos[-1].reloj:
 #         eventos.append(evento)
@@ -19,77 +6,46 @@
 #             if evento.reloj < eventos[i].reloj:
 #                 eventos.insert(i, evento)
 #                 break
+#
+# def insertar_ordenado(eventos, evento, pos_actual=0):
+#     if not eventos or evento.reloj >= eventos[-1].reloj:
+#         eventos.append(evento)
+#     else:
+#         for i in range(pos_actual, len(eventos)):
+#             if evento.reloj < eventos[i].reloj:
+#                 eventos.insert(i, evento)
+#                 break
 
 def insertar_ordenado(eventos, evento, pos_actual=0):
     if not eventos or evento.reloj >= eventos[-1].reloj:
         eventos.append(evento)
-    else:
-        for i in range(pos_actual, len(eventos)):
-            if evento.reloj < eventos[i].reloj:
-                eventos.insert(i, evento)
-                break
+        return
 
-# def insertar_ordenado(eventos, evento, pos_actual=0):
-#     if not eventos or evento.reloj >= eventos[-1].reloj:
-#         eventos.append(evento)
-#         return
-#
-#     izquierda = pos_actual
-#     derecha = len(eventos) - 1
-#
-#     while izquierda <= derecha:
-#         medio = (izquierda + derecha) // 2
-#         if evento.reloj < eventos[medio].reloj:
-#             derecha = medio - 1
-#         else:
-#             izquierda = medio + 1
-#
-#     eventos.insert(izquierda, evento)
+    izquierda = pos_actual
+    derecha = len(eventos) - 1
+
+    while izquierda <= derecha:
+        medio = (izquierda + derecha) // 2
+        if evento.reloj < eventos[medio].reloj:
+            derecha = medio - 1
+        else:
+            izquierda = medio + 1
+
+    eventos.insert(izquierda, evento)
+
+# def buscar_cliente_por_id(clientes, id_cliente):
+#     for cliente in clientes:
+#         if cliente.id_cliente == id_cliente:
+#             return cliente
+#     return None
 
 
-# def insertar_ordenado(eventos, evento, pos_actual=0):
-#     if not eventos or evento.reloj >= eventos[-1].reloj:
-#         eventos.append(evento)
-#         return
-#
-#     izquierda = pos_actual
-#     derecha = len(eventos) - 1
-#
-#     while izquierda <= derecha:
-#         medio = (izquierda + derecha) // 2
-#         if evento.reloj < eventos[medio].reloj:
-#             derecha = medio - 1
-#         else:
-#             izquierda = medio + 1
-#
-#     eventos.insert(izquierda, evento)
-
-
-# def insertar_ordenado(eventos, evento):
-#     if not eventos or evento.reloj >= eventos[-1].reloj:
-#         eventos.append(evento)
-#         return
-#
-#     izquierda = 0
-#     derecha = len(eventos) - 1
-#
-#     while izquierda <= derecha:
-#         medio = (izquierda + derecha) // 2
-#         if evento.reloj < eventos[medio].reloj:
-#             derecha = medio - 1
-#         else:
-#             izquierda = medio + 1
-#
-#     eventos.insert(izquierda, evento)
-
-
-
-def buscar_cliente_por_id(clientes, id_cliente):
-    for cliente in clientes:
-        if cliente.id_cliente == id_cliente:
-            return cliente
-    return None
-
+# def eliminar_cliente_por_id(clientes, id_cliente):
+#     for i, cliente in enumerate(clientes):
+#         if cliente.id_cliente == id_cliente:
+#             del clientes[i]
+#             return True
+#     return False
 
 def eliminar_cliente_por_id(clientes, id_cliente):
     for i, cliente in enumerate(clientes):
